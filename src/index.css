@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #8eff71;
+  --color-primary-fixed: #2ff801;
+  --color-on-primary-fixed: #064200;
+  --color-secondary: #ac89ff;
+  --color-tertiary: #ff7948;
+  --color-error: #ff7351;
+  
+  --color-surface: #0e0e13;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low: #131319;
+  --color-surface-container: #19191f;
+  --color-surface-container-high: #1f1f26;
+  --color-surface-container-highest: #25252d;
+  
+  --color-on-surface: #f9f5fd;
+  --color-on-surface-variant: #acaab1;
+  --color-on-primary: #0d6100;
+
+  --font-headline: "Lexend", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--color-surface);
+  background-image: 
+      radial-gradient(at 0% 0%, rgba(142, 255, 113, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(172, 137, 255, 0.08) 0px, transparent 50%);
+  min-height: 100vh;
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+.mesh-gradient {
+  background: radial-gradient(at 0% 0%, rgba(142, 255, 113, 0.15) 0px, transparent 50%),
+              radial-gradient(at 100% 0%, rgba(172, 137, 255, 0.1) 0px, transparent 50%),
+              radial-gradient(at 100% 100%, rgba(142, 255, 113, 0.1) 0px, transparent 50%),
+              radial-gradient(at 0% 100%, rgba(172, 137, 255, 0.15) 0px, transparent 50%);
+}
+
+.neon-glow-primary {
+  text-shadow: 0 0 10px rgba(142, 255, 113, 0.5), 0 0 20px rgba(142, 255, 113, 0.3);
+}
+
+.neon-glow-primary-box {
+  box-shadow: 0 0 15px rgba(142, 255, 113, 0.4);
+}
+
+.neon-glow-primary-box:focus {
+  box-shadow: 0 0 15px rgba(142, 255, 113, 0.4);
+}
+
+.gold-glow {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.15);
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+}
+
+/* Hide arrows in number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

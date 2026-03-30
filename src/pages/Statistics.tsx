@@ -1,0 +1,183 @@
+import { useStore } from '../store/useStore';
+import { useStandings } from '../hooks/useStandings';
+import { vi } from '../lang/vi';
+import { GlassCard } from '../components/GlassCard';
+import { Shield, Trophy, ArrowRight, Activity, Clock, AlertTriangle, Users } from 'lucide-react';
+import { cn } from '../utils/cn';
+
+export const Statistics = () => {
+  const { matches, teams, players } = useStore();
+  const standings = useStandings(matches, teams);
+
+  const sortedPlayers = [...players].sort((a, b) => {
+    if (b.goals !== a.goals) return b.goals - a.goals;
+    return b.assists - a.assists;
+  });
+
+  const getTeamName = (teamId: string) => teams.find((t) => t.id === teamId)?.name;
+
+  return (
+    <div className="space-y-6 md:space-y-8 animate-in fade-in duration-700 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
+        {standings.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-white/50 bg-surface-container-low/40 rounded-3xl border border-white/5">
+            Chưa có dữ liệu đội bóng. Vui lòng thêm đội bóng ở trang Đội bóng.
+          </div>
+        ) : (
+          standings.map((teamStanding, index) => {
+            const teamInfo = teams.find((t) => t.id === teamStanding.teamId);
+            const totalGoals = teamStanding.goalsFor + teamStanding.goalsAgainst;
+            const goalsForPercent = totalGoals > 0 ? (teamStanding.goalsFor / totalGoals) * 100 : 50;
+            const goalsAgainstPercent = totalGoals > 0 ? (teamStanding.goalsAgainst / totalGoals) * 100 : 50;
+            
+            return (
+              <GlassCard key={teamStanding.teamId} className="p-4 md:p-6 relative overflow-hidden h-full w-full">
+                <div className="absolute -right-20 -top-20 w-48 h-48 md:w-64 md:h-64 bg-primary/10 blur-[80px] md:blur-[100px] rounded-full"></div>
+                
+                <div className="flex items-center justify-between mb-6 md:mb-8 relative z-10 gap-2">
+                  <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-surface-container-highest flex items-center justify-center border border-white/10 shadow-lg shrink-0 overflow-hidden">
+                      {teamInfo?.logo ? (
+                        <img src={teamInfo.logo} alt={teamInfo?.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <Shield className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className="font-headline font-extrabold text-lg sm:text-xl md:text-2xl tracking-tight truncate">{teamInfo?.name}</h2>
+                      <p className="text-[10px] sm:text-xs md:text-sm text-on-surface-variant flex items-center gap-2 truncate">
+                        <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0"></span> <span className="truncate">{vi.statistics.liveSeasonData}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0 pl-2">
+                    <p className="text-[10px] md:text-xs text-on-surface-variant uppercase tracking-tighter">{vi.statistics.winRate}</p>
+                    <p className="font-headline font-black text-xl sm:text-2xl md:text-3xl text-primary">
+                      {teamStanding.played ? ((teamStanding.won / teamStanding.played) * 100).toFixed(1) : 0}%
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-12 relative z-10">
+                  <div className="space-y-2 md:space-y-4 min-w-0">
+                    <div className="flex justify-between items-end">
+                      <div className="min-w-0">
+                        <p className="text-[8px] md:text-[10px] uppercase font-bold text-on-surface-variant tracking-wider truncate">{vi.statistics.goalsFor}</p>
+                        <p className="text-3xl sm:text-4xl md:text-5xl font-headline font-black truncate">{teamStanding.goalsFor || 0}</p>
+                      </div>
+                    </div>
+                    <div className="w-full h-2 md:h-3 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-primary/40 to-primary rounded-full neon-glow-primary" style={{ width: `${goalsForPercent}%` }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2 md:space-y-4 min-w-0">
+                    <div className="flex justify-between items-end text-right">
+                      <div className="w-full min-w-0">
+                        <p className="text-[8px] md:text-[10px] uppercase font-bold text-on-surface-variant tracking-wider truncate">{vi.statistics.goalsAgainst}</p>
+                        <p className="text-3xl sm:text-4xl md:text-5xl font-headline font-black truncate">{teamStanding.goalsAgainst || 0}</p>
+                      </div>
+                    </div>
+                    <div className="w-full h-2 md:h-3 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-secondary/40 to-secondary rounded-full" style={{ width: `${goalsAgainstPercent}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 md:mt-8 flex flex-wrap gap-2 md:gap-3 relative z-10">
+                  <span className="px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-yellow-500/10 text-yellow-500 text-[8px] sm:text-[10px] font-bold border border-yellow-500/20 whitespace-nowrap">
+                    {vi.statistics.yellowCards}: 0
+                  </span>
+                  <span className="px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-error/10 text-error text-[8px] sm:text-[10px] font-bold border border-error/20 whitespace-nowrap">
+                    {vi.statistics.redCards}: 0
+                  </span>
+                </div>
+              </GlassCard>
+            );
+          })
+        )}
+      </div>
+
+      {/* Player Standings Table Section */}
+      <GlassCard className="overflow-hidden w-full">
+        <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02] gap-4">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
+            <Trophy className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
+            <h3 className="font-headline font-bold text-base md:text-lg truncate">{vi.statistics.topPlayersRank}</h3>
+          </div>
+          <button className="text-[10px] md:text-xs font-bold text-primary flex items-center gap-1 hover:underline shrink-0">
+            <span className="hidden sm:inline">{vi.statistics.viewAllRankings}</span>
+            <span className="sm:hidden">Tất cả</span>
+            <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+          </button>
+        </div>
+        <div className="overflow-x-auto w-full scrollbar-hide">
+          <table className="w-full text-left min-w-max">
+            <thead>
+              <tr className="text-[10px] md:text-[11px] uppercase tracking-widest text-on-surface-variant bg-white/[0.01]">
+                <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.no}</th>
+                <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.playerName}</th>
+                <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.team}</th>
+                <th className="px-4 md:px-6 py-3 md:py-4 font-semibold text-center whitespace-nowrap">BT</th>
+                <th className="px-4 md:px-6 py-3 md:py-4 font-semibold text-center whitespace-nowrap">KT</th>
+                <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.form}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {sortedPlayers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-white/50">
+                    Chưa có dữ liệu cầu thủ. Vui lòng thêm cầu thủ ở trang Đội bóng.
+                  </td>
+                </tr>
+              ) : (
+                sortedPlayers.map((player, index) => (
+                  <tr key={player.id} className="group hover:bg-white/[0.03] transition-colors">
+                    <td className="px-4 md:px-6 py-4 md:py-5">
+                      <span
+                        className={cn(
+                          'w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center font-headline font-black text-xs md:text-sm',
+                          index === 0
+                            ? 'bg-primary text-on-primary shadow-[0_0_10px_rgba(142,255,113,0.3)]'
+                            : 'bg-surface-container-highest text-white/80'
+                        )}
+                      >
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    </td>
+                    <td className="px-4 md:px-6 py-4 md:py-5">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={player.avatar || `https://ui-avatars.com/api/?name=${player.name}&background=random`}
+                          alt={player.name}
+                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all shrink-0"
+                        />
+                        <span className="font-headline font-bold text-sm md:text-base whitespace-nowrap">{player.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 md:px-6 py-4 md:py-5 text-on-surface-variant font-medium text-sm md:text-base whitespace-nowrap">{getTeamName(player.teamId)}</td>
+                    <td className="px-4 md:px-6 py-4 md:py-5 text-center font-headline font-black text-primary text-lg md:text-xl">{player.goals}</td>
+                    <td className="px-4 md:px-6 py-4 md:py-5 text-center font-headline font-black text-white/90 text-lg md:text-xl">{player.assists}</td>
+                    <td className="px-4 md:px-6 py-4 md:py-5">
+                      <div className="flex gap-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={cn(
+                              'w-1 md:w-1.5 h-4 md:h-6 rounded-full',
+                              i < (5 - index) ? 'bg-primary' : 'bg-white/10'
+                            )}
+                          ></div>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+
+    </div>
+  );
+};
