@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useStandings } from '../hooks/useStandings';
 import { vi } from '../lang/vi';
@@ -7,6 +8,7 @@ import { cn } from '../utils/cn';
 export const Dashboard = () => {
   const { matches, teams, players } = useStore();
   const standings = useStandings(matches, teams);
+  const [isDetailedView, setIsDetailedView] = useState(false);
 
   const topScorers = [...players].sort((a, b) => b.goals - a.goals).slice(0, 5);
 
@@ -38,10 +40,13 @@ export const Dashboard = () => {
                 <Trophy className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                 <h3 className="text-lg md:text-xl font-bold font-headline">{vi.dashboard.standingsTitle}</h3>
               </div>
-              <button className="text-[10px] md:text-xs font-bold text-primary flex items-center gap-1 md:gap-2 hover:underline">
-                <span className="hidden sm:inline">{vi.dashboard.viewDetailedStats}</span>
-                <span className="sm:hidden">Chi tiết</span>
-                <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+              <button 
+                onClick={() => setIsDetailedView(!isDetailedView)}
+                className="text-[10px] md:text-xs font-bold text-primary flex items-center gap-1 md:gap-2 hover:underline"
+              >
+                <span className="hidden sm:inline">{isDetailedView ? 'Thu gọn' : vi.dashboard.viewDetailedStats}</span>
+                <span className="sm:hidden">{isDetailedView ? 'Thu gọn' : 'Chi tiết'}</span>
+                <ArrowRight className={cn("w-3 h-3 md:w-4 md:h-4 transition-transform", isDetailedView && "rotate-180")} />
               </button>
             </div>
             
@@ -49,17 +54,27 @@ export const Dashboard = () => {
               <table className="w-full text-left border-separate border-spacing-y-2 md:border-spacing-y-3 min-w-[500px]">
                 <thead>
                   <tr className="text-on-surface-variant text-[10px] md:text-xs font-bold tracking-widest uppercase">
-                    <th className="px-3 md:px-6 pb-2">{vi.dashboard.rank}</th>
-                    <th className="px-2 md:px-4 pb-2">{vi.dashboard.teamName}</th>
-                    <th className="px-2 md:px-4 pb-2 text-center">{vi.dashboard.played}</th>
-                    <th className="px-2 md:px-4 pb-2 text-center">{vi.dashboard.goalDiff}</th>
-                    <th className="px-2 md:px-4 pb-2 text-center">{vi.dashboard.points}</th>
+                    <th className="px-3 md:px-6 pb-2">Hạng</th>
+                    <th className="px-2 md:px-4 pb-2">Tên đội bóng</th>
+                    <th className="px-2 md:px-4 pb-2 text-center">P</th>
+                    {isDetailedView ? (
+                      <>
+                        <th className="px-2 md:px-4 pb-2 text-center">GF</th>
+                        <th className="px-2 md:px-4 pb-2 text-center">GA</th>
+                        <th className="px-2 md:px-4 pb-2 text-center">W</th>
+                        <th className="px-2 md:px-4 pb-2 text-center">D</th>
+                        <th className="px-2 md:px-4 pb-2 text-center">L</th>
+                      </>
+                    ) : (
+                      <th className="px-2 md:px-4 pb-2 text-center">{vi.dashboard.goalDiff}</th>
+                    )}
+                    <th className="px-2 md:px-4 pb-2 text-center">PTS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {standings.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-8 text-on-surface/50">
+                      <td colSpan={isDetailedView ? 9 : 5} className="text-center py-8 text-on-surface/50">
                         Chưa có dữ liệu đội bóng. Vui lòng thêm đội bóng ở trang Đội bóng.
                       </td>
                     </tr>
@@ -109,14 +124,24 @@ export const Dashboard = () => {
                           </div>
                         </td>
                         <td className="px-2 md:px-4 py-3 md:py-4 text-center font-bold text-on-surface text-sm md:text-base">{team.played}</td>
-                        <td
-                          className={cn(
-                            'px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base',
-                            team.goalDifference > 0 ? (index === 0 ? 'text-primary' : 'text-on-surface/70') : 'text-error'
-                          )}
-                        >
-                          {team.goalDifference > 0 ? '+' : ''}{team.goalDifference}
-                        </td>
+                        {isDetailedView ? (
+                          <>
+                            <td className="px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base text-on-surface/70">{team.goalsFor}</td>
+                            <td className="px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base text-on-surface/70">{team.goalsAgainst}</td>
+                            <td className="px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base text-success">{team.won}</td>
+                            <td className="px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base text-warning">{team.drawn}</td>
+                            <td className="px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base text-error">{team.lost}</td>
+                          </>
+                        ) : (
+                          <td
+                            className={cn(
+                              'px-2 md:px-4 py-3 md:py-4 text-center font-medium text-sm md:text-base',
+                              team.goalDifference > 0 ? (index === 0 ? 'text-primary' : 'text-on-surface/70') : 'text-error'
+                            )}
+                          >
+                            {team.goalDifference > 0 ? '+' : ''}{team.goalDifference}
+                          </td>
+                        )}
                         <td className="px-2 md:px-4 py-3 md:py-4 text-center rounded-r-xl md:rounded-r-2xl">
                           <span
                             className={cn(
