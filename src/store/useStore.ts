@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import { Team, Match, Player, MatchEvent } from '../types';
+import { Team, Match, Player, MatchEvent, User } from '../types';
 import { supabase } from '../lib/supabase';
 import { deleteImage } from '../lib/storage';
 
 interface StoreState {
+  currentUser: User | null;
+  setCurrentUser: (user: User | null) => void;
   teams: Team[];
   matches: Match[];
   players: Player[];
@@ -26,6 +28,15 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
+  currentUser: JSON.parse(localStorage.getItem('currentUser') || 'null'),
+  setCurrentUser: (user) => {
+    if (user) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('currentUser');
+    }
+    set({ currentUser: user });
+  },
   teams: [],
   matches: [],
   players: [],

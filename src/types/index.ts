@@ -1,3 +1,10 @@
+export interface User {
+  id: string;
+  username: string;
+  role: 'admin' | 'user';
+  is_first_login: boolean;
+}
+
 export interface Team {
   id: string;
   name: string;

@@ -13,6 +13,9 @@ export const Layout = () => {
       case '/': return vi.dashboard.title;
       case '/matches': return vi.matches.title;
       case '/statistics': return vi.statistics.title;
+      case '/teams': return vi.nav.teams || 'Đội bóng';
+      case '/login': return 'Đăng nhập';
+      case '/admin': return 'Quản lý';
       default: return vi.app.title;
     }
   };

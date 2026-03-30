@@ -3,19 +3,38 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Matches } from './pages/Matches';
 import { Statistics } from './pages/Statistics';
 import { Teams } from './pages/Teams';
+import { Login } from './pages/Login';
+import { Admin } from './pages/Admin';
 import { useStore } from './store/useStore';
+import { ChangePasswordModal } from './components/ChangePasswordModal';
+
+function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
+  const currentUser = useStore(state => state.currentUser);
+  const location = useLocation();
+
+  if (!currentUser) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (requireAdmin && currentUser.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 export default function App() {
   const fetchData = useStore(state => state.fetchData);
   const isLoading = useStore(state => state.isLoading);
   const isDarkMode = useStore(state => state.isDarkMode);
+  const currentUser = useStore(state => state.currentUser);
 
   useEffect(() => {
     fetchData();
@@ -39,12 +58,29 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      {currentUser?.is_first_login && <ChangePasswordModal />}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path="matches" element={<Matches />} />
+          <Route path="login" element={
+            currentUser ? <Navigate to="/" replace /> : <Login />
+          } />
           <Route path="statistics" element={<Statistics />} />
-          <Route path="teams" element={<Teams />} />
+          <Route path="matches" element={
+            <ProtectedRoute>
+              <Matches />
+            </ProtectedRoute>
+          } />
+          <Route path="teams" element={
+            <ProtectedRoute>
+              <Teams />
+            </ProtectedRoute>
+          } />
+          <Route path="admin" element={
+            <ProtectedRoute requireAdmin>
+              <Admin />
+            </ProtectedRoute>
+          } />
         </Route>
       </Routes>
     </BrowserRouter>

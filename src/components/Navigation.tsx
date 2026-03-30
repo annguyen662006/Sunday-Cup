@@ -1,17 +1,28 @@
-import { NavLink } from 'react-router-dom';
-import { Home, Trophy, BarChart2, Users, User, Sun, Moon } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Home, Trophy, BarChart2, Users, Sun, Moon, LogOut, LogIn, Shield } from 'lucide-react';
 import { vi } from '../lang/vi';
 import { cn } from '../utils/cn';
 import { useStore } from '../store/useStore';
 
 export const Navigation = () => {
-  const { isDarkMode, toggleDarkMode } = useStore();
+  const { isDarkMode, toggleDarkMode, currentUser, setCurrentUser } = useStore();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    setCurrentUser(null);
+    navigate('/');
+  };
+
   const navItems = [
     { path: '/', label: vi.nav.home, icon: Home },
     { path: '/statistics', label: vi.nav.statistics, icon: BarChart2 },
     { path: '/teams', label: vi.nav.teams, icon: Users },
     { path: '/matches', label: vi.nav.matches, icon: Trophy },
   ];
+
+  if (currentUser?.role === 'admin') {
+    navItems.push({ path: '/admin', label: 'Quản lý', icon: Shield });
+  }
 
   return (
     <>
@@ -56,19 +67,34 @@ export const Navigation = () => {
         </nav>
 
         <div className="p-6 border-t border-on-surface/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-on-surface/10 shrink-0">
-              <img
-                alt="User Profile"
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuANUuqcreiOx4lSM8of1bgX0E7BNUDfQ_ndlqj-QqTYVy--sWMKUDNgENqsUBBOw92DQcSQUryyEid-oYtt0OnYZ9-xZdQoKVmtPT3X8VGP3FbUgIpSaAZu9SpJchoZGW-Erg7NFzBo8n6KI_1RaQCF8BHEgdQ_2L4dYqyKlSYIuijsyixP7XmviPKBr3mQDuk2Jy0F59JoOkV0T5uRndjiITvDgeWoVqNzqFPSA2icRfWbtGBXhAsFOMHbbR0OE3WzgLogCEUGLuw"
-              />
+          {currentUser ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20 shrink-0 text-primary">
+                <span className="font-bold text-lg uppercase">{currentUser.username.charAt(0)}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate">{currentUser.username}</p>
+                <p className="text-[10px] text-primary uppercase tracking-tighter truncate">
+                  {currentUser.role === 'admin' ? 'Quản trị viên' : 'Thành viên'}
+                </p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-xl hover:bg-error/10 text-on-surface-variant hover:text-error transition-colors"
+                title="Đăng xuất"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold truncate">{vi.app.admin}</p>
-              <p className="text-[10px] text-primary uppercase tracking-tighter truncate">{vi.app.proMember}</p>
-            </div>
-          </div>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary/10 text-primary rounded-xl font-medium hover:bg-primary/20 transition-colors"
+            >
+              <LogIn className="w-5 h-5" />
+              Đăng nhập
+            </button>
+          )}
         </div>
       </aside>
 
@@ -91,6 +117,23 @@ export const Navigation = () => {
             <span className="text-[10px] font-bold font-headline truncate w-full text-center">{item.label}</span>
           </NavLink>
         ))}
+        {currentUser ? (
+          <button
+            onClick={handleLogout}
+            className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1 text-on-surface/50 hover:text-error"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="text-[10px] font-bold font-headline truncate w-full text-center">Đăng xuất</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate('/login')}
+            className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1 text-on-surface/50 hover:text-primary"
+          >
+            <LogIn className="w-5 h-5" />
+            <span className="text-[10px] font-bold font-headline truncate w-full text-center">Đăng nhập</span>
+          </button>
+        )}
       </nav>
     </>
   );
