@@ -58,23 +58,23 @@ export const Matches = () => {
 
         <div className="relative w-full md:w-auto">
           <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2 block ml-1">
-            {vi.matches.selectPhase}
+            {vi.matches.selectPhase}{filteredMatches.length > 0 && filteredMatches[0].date ? ` NGÀY ${filteredMatches[0].date}` : ''}
           </label>
-          <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md rounded-xl p-1 border border-white/5 shadow-xl w-full md:w-auto">
+          <div className="flex items-center gap-2 bg-on-surface/5 backdrop-blur-md rounded-xl p-1 border border-on-surface/5 shadow-xl w-full md:w-auto">
             <select
               value={selectedRound}
               onChange={(e) => setSelectedRound(Number(e.target.value))}
-              className="appearance-none bg-transparent text-white text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 md:flex-none"
+              className="appearance-none bg-transparent text-on-surface text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 md:flex-none"
             >
               {Array.from({ length: 10 }, (_, i) => i + 1).map((round) => (
-                <option key={round} value={round} className="bg-surface text-white">
+                <option key={round} value={round} className="bg-surface text-on-surface">
                   {vi.matches.round} {round}
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-4 h-4 text-white/50 mr-2 pointer-events-none absolute right-12 md:static" />
-            <div className="h-6 w-[1px] bg-white/10 mx-1 hidden md:block"></div>
-            <button className="p-3 md:p-2 rounded-lg text-on-surface-variant hover:text-white transition-all shrink-0">
+            <ChevronDown className="w-4 h-4 text-on-surface/50 mr-2 pointer-events-none absolute right-12 md:static" />
+            <div className="h-6 w-[1px] bg-on-surface/10 mx-1 hidden md:block"></div>
+            <button className="p-3 md:p-2 rounded-lg text-on-surface-variant hover:text-on-surface transition-all shrink-0">
               <Calendar className="w-5 h-5" />
             </button>
           </div>
@@ -103,7 +103,7 @@ export const Matches = () => {
               
               <button
                 onClick={() => setDeletingMatchId(match.id)}
-                className="absolute top-2 right-2 p-2 text-white/30 hover:text-error hover:bg-error/10 rounded-full transition-colors z-10"
+                className="absolute top-2 right-2 p-2 text-on-surface/30 hover:text-error hover:bg-error/10 rounded-full transition-colors z-10"
                 title="Xoá kết quả"
               >
                 <X className="w-5 h-5" />
@@ -117,13 +117,13 @@ export const Matches = () => {
                     <span className="font-headline font-bold text-xs md:text-lg text-on-surface tracking-tight text-center md:text-right order-2 md:order-1">
                       {homeTeam?.name}
                     </span>
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-900/40 p-2 border border-blue-400/20 shadow-lg shrink-0 order-1 md:order-2">
-                      <img src={homeTeam?.logo} alt={homeTeam?.name} className="w-full h-full object-contain filter drop-shadow-md" />
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-900/40 border border-blue-400/20 shadow-lg shrink-0 order-1 md:order-2 overflow-hidden">
+                      <img src={homeTeam?.logo || undefined} alt={homeTeam?.name} className="w-full h-full object-cover filter drop-shadow-md" />
                     </div>
                   </div>
 
                   {/* Score Center - Mobile Only */}
-                  <div className="flex md:hidden flex-col items-center gap-1 px-3 py-2 bg-black/20 rounded-2xl border border-white/5 mx-2">
+                  <div className="flex md:hidden flex-col items-center gap-1 px-3 py-2 bg-surface-container-highest/20 rounded-2xl border border-on-surface/5 mx-2">
                     <div className="flex items-center justify-between w-full px-2">
                       <button 
                         onClick={() => setScoringTeam({ matchId: match.id, teamId: match.homeId })}
@@ -141,11 +141,11 @@ export const Matches = () => {
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 bg-surface-container-lowest/40 border border-white/10 rounded-xl flex items-center justify-center font-headline font-black text-xl text-primary neon-glow-primary">
+                      <div className="w-10 h-10 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-xl text-primary neon-glow-primary">
                         {match.homeScore ?? 0}
                       </div>
-                      <span className="font-headline font-bold text-xl text-white/20">:</span>
-                      <div className="w-10 h-10 bg-surface-container-lowest/40 border border-white/10 rounded-xl flex items-center justify-center font-headline font-black text-xl text-primary neon-glow-primary">
+                      <span className="font-headline font-bold text-xl text-on-surface/20">:</span>
+                      <div className="w-10 h-10 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-xl text-primary neon-glow-primary">
                         {match.awayScore ?? 0}
                       </div>
                     </div>
@@ -169,8 +169,8 @@ export const Matches = () => {
 
                   {/* Away Team */}
                   <div className="flex flex-col md:flex-row items-center flex-1 gap-2 md:gap-6">
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-red-500/20 to-red-900/40 p-2 border border-red-400/20 shadow-lg shrink-0">
-                      <img src={awayTeam?.logo} alt={awayTeam?.name} className="w-full h-full object-contain filter drop-shadow-md" />
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-red-500/20 to-red-900/40 border border-red-400/20 shadow-lg shrink-0 overflow-hidden">
+                      <img src={awayTeam?.logo || undefined} alt={awayTeam?.name} className="w-full h-full object-cover filter drop-shadow-md" />
                     </div>
                     <span className="font-headline font-bold text-xs md:text-lg text-on-surface tracking-tight text-center md:text-left">
                       {awayTeam?.name}
@@ -179,7 +179,7 @@ export const Matches = () => {
                 </div>
 
                 {/* Score Center - Desktop Only */}
-                <div className="hidden md:flex flex-col items-center gap-2 px-6 py-2 bg-black/20 rounded-2xl border border-white/5">
+                <div className="hidden md:flex flex-col items-center gap-2 px-6 py-2 bg-surface-container-highest/20 rounded-2xl border border-on-surface/5">
                   <div className="flex items-center justify-between w-full px-2">
                     <button 
                       onClick={() => setScoringTeam({ matchId: match.id, teamId: match.homeId })}
@@ -197,11 +197,11 @@ export const Matches = () => {
                     </button>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 bg-surface-container-lowest/40 border border-white/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
+                    <div className="w-14 h-14 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
                       {match.homeScore ?? 0}
                     </div>
-                    <span className="font-headline font-bold text-2xl text-white/20">:</span>
-                    <div className="w-14 h-14 bg-surface-container-lowest/40 border border-white/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
+                    <span className="font-headline font-bold text-2xl text-on-surface/20">:</span>
+                    <div className="w-14 h-14 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
                       {match.awayScore ?? 0}
                     </div>
                   </div>
@@ -224,19 +224,19 @@ export const Matches = () => {
                 </div>
 
                 {/* Action */}
-                <div className="w-full md:w-auto md:pl-4 md:border-l border-white/5 pt-3 md:pt-0 border-t md:border-t-0 mt-2 md:mt-0 flex flex-col items-center justify-center gap-2">
-                  <div className="text-xs text-white/40 font-medium">
+                <div className="w-full md:w-auto md:pl-4 md:border-l border-on-surface/5 pt-3 md:pt-0 border-t md:border-t-0 mt-2 md:mt-0 flex flex-col items-center justify-center gap-2">
+                  <div className="text-xs text-on-surface/40 font-medium">
                     {match.date}
                   </div>
                   {match.status === 'played' ? (
-                    <div className="w-full md:w-auto bg-surface-container-highest text-white/50 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 text-sm uppercase tracking-tight">
+                    <div className="w-full md:w-auto bg-surface-container-highest text-on-surface/50 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 text-sm uppercase tracking-tight">
                       <CheckCircle className="w-4 h-4" />
                       Đã lưu
                     </div>
                   ) : (
                     <button 
                       onClick={() => setConfirmingMatchId(match.id)}
-                      className="w-full md:w-auto bg-primary hover:bg-primary-fixed text-on-primary-fixed font-bold py-3 px-6 rounded-xl shadow-[0_0_20px_rgba(142,255,113,0.3)] transition-all active:scale-95 text-sm uppercase tracking-tight"
+                      className="w-full md:w-auto bg-primary hover:bg-primary-fixed text-on-primary-fixed font-bold py-3 px-6 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] transition-all active:scale-95 text-sm uppercase tracking-tight"
                     >
                       {vi.matches.save}
                     </button>
@@ -246,19 +246,19 @@ export const Matches = () => {
 
               {/* Match Events */}
               {match.events && match.events.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-white/5 grid grid-cols-2 gap-4">
-                  <div className="space-y-2 text-right pr-4 border-r border-white/5">
+                <div className="mt-6 pt-4 border-t border-on-surface/5 grid grid-cols-2 gap-4">
+                  <div className="space-y-2 text-right pr-4 border-r border-on-surface/5">
                     {match.events.filter(e => e.teamId === match.homeId).map(e => (
-                      <div key={e.id} className="text-sm text-white/80 flex items-center justify-end gap-2">
+                      <div key={e.id} className="text-sm text-on-surface/80 flex items-center justify-end gap-2">
                         <span>{getPlayerName(e.playerId)}</span>
-                        <span className="text-xs text-white/40">{e.timestamp}</span>
+                        <span className="text-xs text-on-surface/40">{e.timestamp}</span>
                       </div>
                     ))}
                   </div>
                   <div className="space-y-2 pl-4">
                     {match.events.filter(e => e.teamId === match.awayId).map(e => (
-                      <div key={e.id} className="text-sm text-white/80 flex items-center gap-2">
-                        <span className="text-xs text-white/40">{e.timestamp}</span>
+                      <div key={e.id} className="text-sm text-on-surface/80 flex items-center gap-2">
+                        <span className="text-xs text-on-surface/40">{e.timestamp}</span>
                         <span>{getPlayerName(e.playerId)}</span>
                       </div>
                     ))}
@@ -269,7 +269,7 @@ export const Matches = () => {
           );
         })}
         {filteredMatches.length === 0 && (
-          <div className="text-center text-white/50 py-12">
+          <div className="text-center text-on-surface/50 py-12">
             Không có trận đấu nào trong lượt này.
           </div>
         )}

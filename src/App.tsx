@@ -15,10 +15,19 @@ import { useStore } from './store/useStore';
 export default function App() {
   const fetchData = useStore(state => state.fetchData);
   const isLoading = useStore(state => state.isLoading);
+  const isDarkMode = useStore(state => state.isDarkMode);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   if (isLoading) {
     return (

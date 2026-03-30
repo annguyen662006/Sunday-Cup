@@ -2,56 +2,107 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #8eff71;
-  --color-primary-fixed: #2ff801;
-  --color-on-primary-fixed: #064200;
-  --color-secondary: #ac89ff;
-  --color-tertiary: #ff7948;
-  --color-error: #ff7351;
+  --color-primary: var(--primary);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-error: var(--error);
   
-  --color-surface: #0e0e13;
-  --color-surface-container-lowest: #000000;
-  --color-surface-container-low: #131319;
-  --color-surface-container: #19191f;
-  --color-surface-container-high: #1f1f26;
-  --color-surface-container-highest: #25252d;
+  --color-surface: var(--surface);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
   
-  --color-on-surface: #f9f5fd;
-  --color-on-surface-variant: #acaab1;
-  --color-on-primary: #0d6100;
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-primary: var(--on-primary);
+
+  --color-white: var(--theme-white);
+  --color-black: var(--theme-black);
 
   --font-headline: "Lexend", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-label: "Inter", sans-serif;
 }
 
+:root {
+  /* Light mode variables */
+  --primary: #2e7d32;
+  --primary-fixed: #4caf50;
+  --on-primary-fixed: #ffffff;
+  --secondary: #673ab7;
+  --tertiary: #ff5722;
+  --error: #d32f2f;
+  
+  --surface: #f8f9fa;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f1f3f4;
+  --surface-container: #e8eaed;
+  --surface-container-high: #dadce0;
+  --surface-container-highest: #bdc1c6;
+  
+  --on-surface: #202124;
+  --on-surface-variant: #5f6368;
+  --on-primary: #ffffff;
+
+  --theme-white: #000000;
+  --theme-black: #ffffff;
+}
+
+.dark {
+  /* Dark mode variables */
+  --primary: #8eff71;
+  --primary-fixed: #2ff801;
+  --on-primary-fixed: #064200;
+  --secondary: #ac89ff;
+  --tertiary: #ff7948;
+  --error: #ff7351;
+  
+  --surface: #0e0e13;
+  --surface-container-lowest: #000000;
+  --surface-container-low: #131319;
+  --surface-container: #19191f;
+  --surface-container-high: #1f1f26;
+  --surface-container-highest: #25252d;
+  
+  --on-surface: #f9f5fd;
+  --on-surface-variant: #acaab1;
+  --on-primary: #0d6100;
+
+  --theme-white: #ffffff;
+  --theme-black: #000000;
+}
+
 body {
   background-color: var(--color-surface);
   background-image: 
-      radial-gradient(at 0% 0%, rgba(142, 255, 113, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(172, 137, 255, 0.08) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, color-mix(in srgb, var(--primary) 8%, transparent) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, color-mix(in srgb, var(--secondary) 8%, transparent) 0px, transparent 50%);
   min-height: 100vh;
   color: var(--color-on-surface);
   font-family: var(--font-body);
 }
 
 .mesh-gradient {
-  background: radial-gradient(at 0% 0%, rgba(142, 255, 113, 0.15) 0px, transparent 50%),
-              radial-gradient(at 100% 0%, rgba(172, 137, 255, 0.1) 0px, transparent 50%),
-              radial-gradient(at 100% 100%, rgba(142, 255, 113, 0.1) 0px, transparent 50%),
-              radial-gradient(at 0% 100%, rgba(172, 137, 255, 0.15) 0px, transparent 50%);
+  background: radial-gradient(at 0% 0%, color-mix(in srgb, var(--primary) 15%, transparent) 0px, transparent 50%),
+              radial-gradient(at 100% 0%, color-mix(in srgb, var(--secondary) 10%, transparent) 0px, transparent 50%),
+              radial-gradient(at 100% 100%, color-mix(in srgb, var(--primary) 10%, transparent) 0px, transparent 50%),
+              radial-gradient(at 0% 100%, color-mix(in srgb, var(--secondary) 15%, transparent) 0px, transparent 50%);
 }
 
 .neon-glow-primary {
-  text-shadow: 0 0 10px rgba(142, 255, 113, 0.5), 0 0 20px rgba(142, 255, 113, 0.3);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--primary) 50%, transparent), 0 0 20px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .neon-glow-primary-box {
-  box-shadow: 0 0 15px rgba(142, 255, 113, 0.4);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .neon-glow-primary-box:focus {
-  box-shadow: 0 0 15px rgba(142, 255, 113, 0.4);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .gold-glow {

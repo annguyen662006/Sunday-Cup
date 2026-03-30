@@ -132,15 +132,15 @@ export const Teams = () => {
               
               <div className="flex items-start justify-between mb-4 relative z-10">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0 p-2">
+                  <div className="w-16 h-16 rounded-full bg-on-surface/5 flex items-center justify-center border border-on-surface/10 shrink-0 overflow-hidden">
                     {team.logo ? (
-                      <img src={team.logo} alt={team.name} className="w-full h-full object-contain" />
+                      <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Shield className="w-8 h-8 text-white/20" />
+                      <Shield className="w-8 h-8 text-on-surface/20" />
                     )}
                   </div>
                   <div>
-                    <h3 className="font-headline font-bold text-xl">{team.name}</h3>
+                    <h3 className="font-headline font-bold text-xl text-on-surface">{team.name}</h3>
                     <p className="text-sm text-on-surface-variant uppercase tracking-widest">{team.shortName}</p>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export const Teams = () => {
                       setCurrentTeam(team);
                       setIsEditTeamModalOpen(true);
                     }}
-                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                    className="p-2 rounded-lg bg-on-surface/5 hover:bg-on-surface/10 text-on-surface/70 hover:text-on-surface transition-colors"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
@@ -166,7 +166,7 @@ export const Teams = () => {
                 </div>
               </div>
 
-              <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-sm text-on-surface-variant relative z-10">
+              <div className="mt-auto pt-4 border-t border-on-surface/5 flex items-center justify-between text-sm text-on-surface-variant relative z-10">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
                   <span>{teamPlayers.length} cầu thủ</span>
@@ -181,10 +181,10 @@ export const Teams = () => {
       {isAddTeamModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <GlassCard className="w-full max-w-md p-6 relative">
-            <button onClick={() => setIsAddTeamModalOpen(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
+            <button onClick={() => setIsAddTeamModalOpen(false)} className="absolute top-4 right-4 text-on-surface/50 hover:text-on-surface">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-6">Thêm đội bóng mới</h3>
+            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-6 text-on-surface">Thêm đội bóng mới</h3>
             <form onSubmit={handleAddTeamSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Tên đội bóng</label>
@@ -193,7 +193,7 @@ export const Teams = () => {
                   required
                   value={newTeamData.name}
                   onChange={(e) => setNewTeamData({ ...newTeamData, name: e.target.value })}
-                  className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   placeholder="Nhập tên đội bóng"
                 />
               </div>
@@ -204,7 +204,7 @@ export const Teams = () => {
                   required
                   value={newTeamData.shortName}
                   onChange={(e) => setNewTeamData({ ...newTeamData, shortName: e.target.value })}
-                  className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   placeholder="Ví dụ: MU, MC, ARS"
                 />
               </div>
@@ -212,8 +212,8 @@ export const Teams = () => {
                 <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Logo (Tuỳ chọn)</label>
                 <div className="flex items-center gap-4">
                   {newTeamData.logo && (
-                    <div className="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0 p-2 overflow-hidden">
-                      <img src={newTeamData.logo} alt="Logo preview" className="w-full h-full object-contain" />
+                    <div className="w-16 h-16 rounded-full bg-on-surface/5 flex items-center justify-center border border-on-surface/10 shrink-0 overflow-hidden">
+                      <img src={newTeamData.logo} alt="Logo preview" className="w-full h-full object-cover" />
                     </div>
                   )}
                   <div className="flex-1 relative">
@@ -234,12 +234,12 @@ export const Teams = () => {
                     <label
                       htmlFor="team-logo-upload"
                       className={cn(
-                        "flex items-center justify-center gap-2 w-full bg-surface-container-lowest/40 hover:bg-white/5 border border-white/10 border-dashed rounded-xl px-4 py-3 text-white cursor-pointer transition-all",
+                        "flex items-center justify-center gap-2 w-full bg-surface-container-lowest/40 hover:bg-on-surface/5 border border-on-surface/10 border-dashed rounded-xl px-4 py-3 text-on-surface cursor-pointer transition-all",
                         isUploading && "opacity-50 cursor-not-allowed"
                       )}
                     >
-                      <Upload className="w-5 h-5 text-white/50" />
-                      <span className="text-sm font-medium text-white/70">
+                      <Upload className="w-5 h-5 text-on-surface/50" />
+                      <span className="text-sm font-medium text-on-surface/70">
                         {isUploading ? 'Đang tải...' : 'Tải ảnh lên'}
                       </span>
                     </label>
@@ -247,10 +247,10 @@ export const Teams = () => {
                 </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsAddTeamModalOpen(false)} className="px-6 py-3 rounded-xl font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors">
+                <button type="button" onClick={() => setIsAddTeamModalOpen(false)} className="px-6 py-3 rounded-xl font-bold text-on-surface/70 hover:text-on-surface hover:bg-on-surface/5 transition-colors">
                   Hủy
                 </button>
-                <button type="submit" className="px-6 py-3 rounded-xl font-bold bg-primary text-on-primary-fixed hover:bg-primary-fixed shadow-[0_0_15px_rgba(142,255,113,0.3)] transition-all">
+                <button type="submit" className="px-6 py-3 rounded-xl font-bold bg-primary text-on-primary-fixed hover:bg-primary-fixed shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] transition-all">
                   Tiếp tục
                 </button>
               </div>
@@ -263,14 +263,14 @@ export const Teams = () => {
       {isAddPlayersModalOpen && currentTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <GlassCard className="w-full max-w-2xl p-6 relative max-h-[90vh] flex flex-col">
-            <button onClick={() => setIsAddPlayersModalOpen(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
+            <button onClick={() => setIsAddPlayersModalOpen(false)} className="absolute top-4 right-4 text-on-surface/50 hover:text-on-surface">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-2">Thêm cầu thủ</h3>
+            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-2 text-on-surface">Thêm cầu thủ</h3>
             <p className="text-on-surface-variant mb-6">Đội bóng: <span className="text-primary font-bold">{currentTeam.name}</span></p>
             
             <div className="flex-1 overflow-y-auto pr-2 space-y-6">
-              <form onSubmit={handleAddPlayerSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-white/5 p-4 rounded-xl border border-white/10">
+              <form onSubmit={handleAddPlayerSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-on-surface/5 p-4 rounded-xl border border-on-surface/10">
                 <div className="md:col-span-4">
                   <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Họ và tên</label>
                   <input
@@ -278,7 +278,7 @@ export const Teams = () => {
                     required
                     value={newPlayerData.name}
                     onChange={(e) => setNewPlayerData({ ...newPlayerData, name: e.target.value })}
-                    className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-primary outline-none"
+                    className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none"
                     placeholder="Tên cầu thủ"
                   />
                 </div>
@@ -288,7 +288,7 @@ export const Teams = () => {
                     type="number"
                     value={newPlayerData.birthYear}
                     onChange={(e) => setNewPlayerData({ ...newPlayerData, birthYear: e.target.value })}
-                    className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-primary outline-none"
+                    className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none"
                     placeholder="YYYY"
                   />
                 </div>
@@ -296,7 +296,7 @@ export const Teams = () => {
                   <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Avatar</label>
                   <div className="flex items-center gap-2">
                     {newPlayerData.avatar && (
-                      <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center border border-white/10 shrink-0 overflow-hidden">
+                      <div className="w-9 h-9 rounded-full bg-on-surface/5 flex items-center justify-center border border-on-surface/10 shrink-0 overflow-hidden">
                         <img src={newPlayerData.avatar} alt="Avatar preview" className="w-full h-full object-cover" />
                       </div>
                     )}
@@ -318,12 +318,12 @@ export const Teams = () => {
                       <label
                         htmlFor="player-avatar-upload"
                         className={cn(
-                          "flex items-center justify-center gap-1 w-full bg-surface-container-lowest/40 hover:bg-white/5 border border-white/10 border-dashed rounded-lg px-2 py-2 text-white cursor-pointer transition-all",
+                          "flex items-center justify-center gap-1 w-full bg-surface-container-lowest/40 hover:bg-on-surface/5 border border-on-surface/10 border-dashed rounded-lg px-2 py-2 text-on-surface cursor-pointer transition-all",
                           isUploading && "opacity-50 cursor-not-allowed"
                         )}
                       >
-                        <Upload className="w-4 h-4 text-white/50" />
-                        <span className="text-xs font-medium text-white/70 truncate">
+                        <Upload className="w-4 h-4 text-on-surface/50" />
+                        <span className="text-xs font-medium text-on-surface/70 truncate">
                           {isUploading ? 'Đang tải...' : 'Tải ảnh'}
                         </span>
                       </label>
@@ -341,13 +341,13 @@ export const Teams = () => {
               <div className="space-y-2">
                 <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">Danh sách cầu thủ ({players.filter(p => p.teamId === currentTeam.id).length})</h4>
                 {players.filter(p => p.teamId === currentTeam.id).map(player => (
-                  <div key={player.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                  <div key={player.id} className="flex items-center justify-between bg-on-surface/5 p-3 rounded-lg border border-on-surface/5">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden shrink-0">
-                        {player.avatar ? <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" /> : <User className="w-full h-full p-2 text-white/20" />}
+                        {player.avatar ? <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" /> : <User className="w-full h-full p-2 text-on-surface/20" />}
                       </div>
                       <div>
-                        <p className="font-bold text-sm">{player.name}</p>
+                        <p className="font-bold text-sm text-on-surface">{player.name}</p>
                         <p className="text-xs text-on-surface-variant">{player.birthYear ? `Sinh năm: ${player.birthYear}` : 'Chưa cập nhật năm sinh'}</p>
                       </div>
                     </div>
@@ -355,7 +355,7 @@ export const Teams = () => {
                       <button onClick={() => {
                         setEditingPlayerId(player.id);
                         setNewPlayerData({ name: player.name, birthYear: player.birthYear?.toString() || '', avatar: player.avatar || '' });
-                      }} className="p-1.5 rounded-md text-white/50 hover:text-white hover:bg-white/10 transition-colors">
+                      }} className="p-1.5 rounded-md text-on-surface/50 hover:text-on-surface hover:bg-on-surface/10 transition-colors">
                         <Edit className="w-4 h-4" />
                       </button>
                       <button onClick={() => deletePlayer(player.id)} className="p-1.5 rounded-md text-error/70 hover:text-error hover:bg-error/10 transition-colors">
@@ -367,8 +367,8 @@ export const Teams = () => {
               </div>
             </div>
             
-            <div className="pt-6 mt-auto border-t border-white/5 flex justify-end">
-              <button onClick={() => setIsAddPlayersModalOpen(false)} className="px-6 py-3 rounded-xl font-bold bg-primary text-on-primary-fixed hover:bg-primary-fixed shadow-[0_0_15px_rgba(142,255,113,0.3)] transition-all">
+            <div className="pt-6 mt-auto border-t border-on-surface/5 flex justify-end">
+              <button onClick={() => setIsAddPlayersModalOpen(false)} className="px-6 py-3 rounded-xl font-bold bg-primary text-on-primary-fixed hover:bg-primary-fixed shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] transition-all">
                 Hoàn tất
               </button>
             </div>
@@ -380,10 +380,10 @@ export const Teams = () => {
       {isEditTeamModalOpen && currentTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <GlassCard className="w-full max-w-2xl p-6 relative max-h-[90vh] flex flex-col">
-            <button onClick={() => setIsEditTeamModalOpen(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
+            <button onClick={() => setIsEditTeamModalOpen(false)} className="absolute top-4 right-4 text-on-surface/50 hover:text-on-surface">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-6">Chỉnh sửa đội bóng</h3>
+            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-6 text-on-surface">Chỉnh sửa đội bóng</h3>
             
             <div className="flex-1 overflow-y-auto pr-2 space-y-6">
               <form onSubmit={handleEditTeamSubmit} className="space-y-4">
@@ -395,7 +395,7 @@ export const Teams = () => {
                       required
                       value={currentTeam.name}
                       onChange={(e) => setCurrentTeam({ ...currentTeam, name: e.target.value })}
-                      className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                      className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -405,7 +405,7 @@ export const Teams = () => {
                       required
                       value={currentTeam.shortName}
                       onChange={(e) => setCurrentTeam({ ...currentTeam, shortName: e.target.value })}
-                      className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                      className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -413,8 +413,8 @@ export const Teams = () => {
                   <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Logo</label>
                   <div className="flex items-center gap-4">
                     {currentTeam.logo && (
-                      <div className="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0 p-2 overflow-hidden">
-                        <img src={currentTeam.logo} alt="Logo preview" className="w-full h-full object-contain" />
+                      <div className="w-16 h-16 rounded-full bg-on-surface/5 flex items-center justify-center border border-on-surface/10 shrink-0 overflow-hidden">
+                        <img src={currentTeam.logo} alt="Logo preview" className="w-full h-full object-cover" />
                       </div>
                     )}
                     <div className="flex-1 relative">
@@ -435,12 +435,12 @@ export const Teams = () => {
                       <label
                         htmlFor="edit-team-logo-upload"
                         className={cn(
-                          "flex items-center justify-center gap-2 w-full bg-surface-container-lowest/40 hover:bg-white/5 border border-white/10 border-dashed rounded-xl px-4 py-3 text-white cursor-pointer transition-all",
+                          "flex items-center justify-center gap-2 w-full bg-surface-container-lowest/40 hover:bg-on-surface/5 border border-on-surface/10 border-dashed rounded-xl px-4 py-3 text-on-surface cursor-pointer transition-all",
                           isUploading && "opacity-50 cursor-not-allowed"
                         )}
                       >
-                        <Upload className="w-5 h-5 text-white/50" />
-                        <span className="text-sm font-medium text-white/70">
+                        <Upload className="w-5 h-5 text-on-surface/50" />
+                        <span className="text-sm font-medium text-on-surface/70">
                           {isUploading ? 'Đang tải...' : 'Tải ảnh lên'}
                         </span>
                       </label>
@@ -448,15 +448,15 @@ export const Teams = () => {
                   </div>
                 </div>
                 <div className="flex justify-end">
-                  <button type="submit" className="px-6 py-2 rounded-xl font-bold bg-white/10 text-white hover:bg-white/20 transition-all flex items-center gap-2">
+                  <button type="submit" className="px-6 py-2 rounded-xl font-bold bg-on-surface/10 text-on-surface hover:bg-on-surface/20 transition-all flex items-center gap-2">
                     <Save className="w-4 h-4" /> Lưu thông tin đội
                   </button>
                 </div>
               </form>
 
-              <div className="border-t border-white/10 pt-6">
-                <h4 className="text-lg font-bold font-headline mb-4">Quản lý cầu thủ</h4>
-                <form onSubmit={handleAddPlayerSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+              <div className="border-t border-on-surface/10 pt-6">
+                <h4 className="text-lg font-bold font-headline mb-4 text-on-surface">Quản lý cầu thủ</h4>
+                <form onSubmit={handleAddPlayerSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-on-surface/5 p-4 rounded-xl border border-on-surface/10 mb-4">
                   <div className="md:col-span-4">
                     <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Họ và tên</label>
                     <input
@@ -464,7 +464,7 @@ export const Teams = () => {
                       required
                       value={newPlayerData.name}
                       onChange={(e) => setNewPlayerData({ ...newPlayerData, name: e.target.value })}
-                      className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-primary outline-none"
+                      className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none"
                       placeholder="Tên cầu thủ"
                     />
                   </div>
@@ -474,7 +474,7 @@ export const Teams = () => {
                       type="number"
                       value={newPlayerData.birthYear}
                       onChange={(e) => setNewPlayerData({ ...newPlayerData, birthYear: e.target.value })}
-                      className="w-full bg-surface-container-lowest/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-primary outline-none"
+                      className="w-full bg-surface-container-lowest/40 border border-on-surface/10 rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none"
                       placeholder="YYYY"
                     />
                   </div>
@@ -482,7 +482,7 @@ export const Teams = () => {
                     <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Avatar</label>
                     <div className="flex items-center gap-2">
                       {newPlayerData.avatar && (
-                        <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center border border-white/10 shrink-0 overflow-hidden">
+                        <div className="w-9 h-9 rounded-full bg-on-surface/5 flex items-center justify-center border border-on-surface/10 shrink-0 overflow-hidden">
                           <img src={newPlayerData.avatar} alt="Avatar preview" className="w-full h-full object-cover" />
                         </div>
                       )}
@@ -504,12 +504,12 @@ export const Teams = () => {
                         <label
                           htmlFor="edit-player-avatar-upload"
                           className={cn(
-                            "flex items-center justify-center gap-1 w-full bg-surface-container-lowest/40 hover:bg-white/5 border border-white/10 border-dashed rounded-lg px-2 py-2 text-white cursor-pointer transition-all",
+                            "flex items-center justify-center gap-1 w-full bg-surface-container-lowest/40 hover:bg-on-surface/5 border border-on-surface/10 border-dashed rounded-lg px-2 py-2 text-on-surface cursor-pointer transition-all",
                             isUploading && "opacity-50 cursor-not-allowed"
                           )}
                         >
-                          <Upload className="w-4 h-4 text-white/50" />
-                          <span className="text-xs font-medium text-white/70 truncate">
+                          <Upload className="w-4 h-4 text-on-surface/50" />
+                          <span className="text-xs font-medium text-on-surface/70 truncate">
                             {isUploading ? 'Đang tải...' : 'Tải ảnh'}
                           </span>
                         </label>
@@ -526,13 +526,13 @@ export const Teams = () => {
 
                 <div className="space-y-2">
                   {players.filter(p => p.teamId === currentTeam.id).map(player => (
-                    <div key={player.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                    <div key={player.id} className="flex items-center justify-between bg-on-surface/5 p-3 rounded-lg border border-on-surface/5">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden shrink-0">
-                          {player.avatar ? <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" /> : <User className="w-full h-full p-2 text-white/20" />}
+                          {player.avatar ? <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" /> : <User className="w-full h-full p-2 text-on-surface/20" />}
                         </div>
                         <div>
-                          <p className="font-bold text-sm">{player.name}</p>
+                          <p className="font-bold text-sm text-on-surface">{player.name}</p>
                           <p className="text-xs text-on-surface-variant">{player.birthYear ? `Sinh năm: ${player.birthYear}` : 'Chưa cập nhật năm sinh'}</p>
                         </div>
                       </div>
@@ -540,7 +540,7 @@ export const Teams = () => {
                         <button onClick={() => {
                           setEditingPlayerId(player.id);
                           setNewPlayerData({ name: player.name, birthYear: player.birthYear?.toString() || '', avatar: player.avatar || '' });
-                        }} className="p-1.5 rounded-md text-white/50 hover:text-white hover:bg-white/10 transition-colors">
+                        }} className="p-1.5 rounded-md text-on-surface/50 hover:text-on-surface hover:bg-on-surface/10 transition-colors">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button onClick={() => deletePlayer(player.id)} className="p-1.5 rounded-md text-error/70 hover:text-error hover:bg-error/10 transition-colors">
@@ -563,12 +563,12 @@ export const Teams = () => {
             <div className="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="w-8 h-8 text-error" />
             </div>
-            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-2">Xóa đội bóng?</h3>
+            <h3 className="text-2xl font-black font-headline uppercase italic tracking-tighter mb-2 text-on-surface">Xóa đội bóng?</h3>
             <p className="text-on-surface-variant mb-6">
-              Bạn có chắc chắn muốn xóa đội <span className="text-white font-bold">{currentTeam.name}</span>? Hành động này sẽ xóa toàn bộ cầu thủ thuộc đội bóng này và không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa đội <span className="text-on-surface font-bold">{currentTeam.name}</span>? Hành động này sẽ xóa toàn bộ cầu thủ thuộc đội bóng này và không thể hoàn tác.
             </p>
             <div className="flex justify-center gap-3">
-              <button onClick={() => setIsDeleteTeamModalOpen(false)} className="px-6 py-3 rounded-xl font-bold text-white/70 hover:text-white hover:bg-white/5 transition-colors">
+              <button onClick={() => setIsDeleteTeamModalOpen(false)} className="px-6 py-3 rounded-xl font-bold text-on-surface/70 hover:text-on-surface hover:bg-on-surface/5 transition-colors">
                 Hủy
               </button>
               <button onClick={handleDeleteTeam} className="px-6 py-3 rounded-xl font-bold bg-error text-white hover:bg-error/80 shadow-[0_0_15px_rgba(255,84,73,0.3)] transition-all">

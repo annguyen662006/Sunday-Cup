@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import { Team, Match, Player, MatchEvent } from '../types';
 import { supabase } from '../lib/supabase';
+import { deleteImage } from '../lib/storage';
 
 interface StoreState {
   teams: Team[];
   matches: Match[];
   players: Player[];
   isLoading: boolean;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
   fetchData: () => Promise<void>;
   updateMatchScore: (matchId: number, homeScore: number, awayScore: number) => Promise<void>;
   addMatch: (match: Omit<Match, 'id' | 'status' | 'homeScore' | 'awayScore' | 'events'>) => Promise<void>;
@@ -27,6 +30,21 @@ export const useStore = create<StoreState>()((set, get) => ({
   matches: [],
   players: [],
   isLoading: false,
+  isDarkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+
+  toggleDarkMode: () => {
+    set((state) => {
+      const newIsDarkMode = !state.isDarkMode;
+      if (newIsDarkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+      return { isDarkMode: newIsDarkMode };
+    });
+  },
 
   fetchData: async () => {
     set({ isLoading: true });
@@ -262,6 +280,14 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   updateTeam: async (id, team) => {
+    const state = get();
+    const currentTeam = state.teams.find(t => t.id === id);
+
+    // If logo is being updated and there was an old logo, delete the old one
+    if (team.logo !== undefined && currentTeam?.logo && currentTeam.logo !== team.logo) {
+      await deleteImage(currentTeam.logo);
+    }
+
     set((state) => ({
       teams: state.teams.map((t) => (t.id === id ? { ...t, ...team } : t)),
     }));
@@ -275,12 +301,30 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   deleteTeam: async (id) => {
+    // Get team and players to delete their images
+    const state = get();
+    const teamToDelete = state.teams.find(t => t.id === id);
+    const playersToDelete = state.players.filter(p => p.teamId === id);
+
+    if (teamToDelete?.logo) {
+      await deleteImage(teamToDelete.logo);
+    }
+
+    for (const player of playersToDelete) {
+      if (player.avatar) {
+        await deleteImage(player.avatar);
+      }
+    }
+
     set((state) => ({
       teams: state.teams.filter((t) => t.id !== id),
       players: state.players.filter((p) => p.teamId !== id),
       matches: state.matches.filter((m) => m.homeId !== id && m.awayId !== id),
     }));
 
+    // Explicitly delete matches and players from the database first to avoid foreign key constraints
+    await supabase.from('matches').delete().or(`home_id.eq.${id},away_id.eq.${id}`);
+    await supabase.from('players').delete().eq('team_id', id);
     await supabase.from('teams').delete().eq('id', id);
   },
 
@@ -303,6 +347,14 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   updatePlayer: async (id, player) => {
+    const state = get();
+    const currentPlayer = state.players.find(p => p.id === id);
+
+    // If avatar is being updated and there was an old avatar, delete the old one
+    if (player.avatar !== undefined && currentPlayer?.avatar && currentPlayer.avatar !== player.avatar) {
+      await deleteImage(currentPlayer.avatar);
+    }
+
     set((state) => ({
       players: state.players.map((p) => (p.id === id ? { ...p, ...player } : p)),
     }));
@@ -319,6 +371,13 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   deletePlayer: async (id) => {
+    const state = get();
+    const playerToDelete = state.players.find(p => p.id === id);
+    
+    if (playerToDelete?.avatar) {
+      await deleteImage(playerToDelete.avatar);
+    }
+
     set((state) => ({
       players: state.players.filter((p) => p.id !== id),
     }));

@@ -25,3 +25,32 @@ export const uploadImage = async (file: Blob, path: string): Promise<string | nu
     return null;
   }
 };
+
+export const deleteImage = async (publicUrl: string): Promise<boolean> => {
+  try {
+    if (!publicUrl) return false;
+    
+    // Extract the file path from the public URL
+    // Public URL format: https://[PROJECT_ID].supabase.co/storage/v1/object/public/images/path/to/file.jpg
+    const urlParts = publicUrl.split('/public/images/');
+    if (urlParts.length !== 2) {
+      return false;
+    }
+    
+    const filePath = urlParts[1];
+    
+    const { error } = await supabase.storage
+      .from('images')
+      .remove([filePath]);
+      
+    if (error) {
+      console.error('Error deleting image:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Unexpected error deleting image:', error);
+    return false;
+  }
+};

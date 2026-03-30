@@ -20,7 +20,7 @@ export const Statistics = () => {
     <div className="space-y-6 md:space-y-8 animate-in fade-in duration-700 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
         {standings.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-white/50 bg-surface-container-low/40 rounded-3xl border border-white/5">
+          <div className="col-span-full text-center py-12 text-on-surface/50 bg-surface-container-low/40 rounded-3xl border border-on-surface/5">
             Chưa có dữ liệu đội bóng. Vui lòng thêm đội bóng ở trang Đội bóng.
           </div>
         ) : (
@@ -36,7 +36,7 @@ export const Statistics = () => {
                 
                 <div className="flex items-center justify-between mb-6 md:mb-8 relative z-10 gap-2">
                   <div className="flex items-center gap-3 md:gap-4 min-w-0">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-surface-container-highest flex items-center justify-center border border-white/10 shadow-lg shrink-0 overflow-hidden">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-surface-container-highest flex items-center justify-center border border-on-surface/10 shadow-lg shrink-0 overflow-hidden">
                       {teamInfo?.logo ? (
                         <img src={teamInfo.logo} alt={teamInfo?.name} className="w-full h-full object-cover" />
                       ) : (
@@ -66,7 +66,7 @@ export const Statistics = () => {
                         <p className="text-3xl sm:text-4xl md:text-5xl font-headline font-black truncate">{teamStanding.goalsFor || 0}</p>
                       </div>
                     </div>
-                    <div className="w-full h-2 md:h-3 bg-white/5 rounded-full overflow-hidden">
+                    <div className="w-full h-2 md:h-3 bg-on-surface/5 rounded-full overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-primary/40 to-primary rounded-full neon-glow-primary" style={{ width: `${goalsForPercent}%` }}></div>
                     </div>
                   </div>
@@ -77,7 +77,7 @@ export const Statistics = () => {
                         <p className="text-3xl sm:text-4xl md:text-5xl font-headline font-black truncate">{teamStanding.goalsAgainst || 0}</p>
                       </div>
                     </div>
-                    <div className="w-full h-2 md:h-3 bg-white/5 rounded-full overflow-hidden">
+                    <div className="w-full h-2 md:h-3 bg-on-surface/5 rounded-full overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-secondary/40 to-secondary rounded-full" style={{ width: `${goalsAgainstPercent}%` }}></div>
                     </div>
                   </div>
@@ -99,7 +99,7 @@ export const Statistics = () => {
 
       {/* Player Standings Table Section */}
       <GlassCard className="overflow-hidden w-full">
-        <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02] gap-4">
+        <div className="p-4 md:p-6 border-b border-on-surface/5 flex items-center justify-between bg-on-surface/[0.02] gap-4">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <Trophy className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
             <h3 className="font-headline font-bold text-base md:text-lg truncate">{vi.statistics.topPlayersRank}</h3>
@@ -113,7 +113,7 @@ export const Statistics = () => {
         <div className="overflow-x-auto w-full scrollbar-hide">
           <table className="w-full text-left min-w-max">
             <thead>
-              <tr className="text-[10px] md:text-[11px] uppercase tracking-widest text-on-surface-variant bg-white/[0.01]">
+              <tr className="text-[10px] md:text-[11px] uppercase tracking-widest text-on-surface-variant bg-on-surface/[0.01]">
                 <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.no}</th>
                 <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.playerName}</th>
                 <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.team}</th>
@@ -122,23 +122,23 @@ export const Statistics = () => {
                 <th className="px-4 md:px-6 py-3 md:py-4 font-semibold whitespace-nowrap">{vi.statistics.form}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-on-surface/5">
               {sortedPlayers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-8 text-white/50">
+                  <td colSpan={6} className="text-center py-8 text-on-surface/50">
                     Chưa có dữ liệu cầu thủ. Vui lòng thêm cầu thủ ở trang Đội bóng.
                   </td>
                 </tr>
               ) : (
                 sortedPlayers.map((player, index) => (
-                  <tr key={player.id} className="group hover:bg-white/[0.03] transition-colors">
+                  <tr key={player.id} className="group hover:bg-on-surface/[0.03] transition-colors">
                     <td className="px-4 md:px-6 py-4 md:py-5">
                       <span
                         className={cn(
-                          'w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center font-headline font-black text-xs md:text-sm',
+                          'w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center font-headline font-black text-xs md:text-sm',
                           index === 0
                             ? 'bg-primary text-on-primary shadow-[0_0_10px_rgba(142,255,113,0.3)]'
-                            : 'bg-surface-container-highest text-white/80'
+                            : 'bg-surface-container-highest text-on-surface/80'
                         )}
                       >
                         {String(index + 1).padStart(2, '0')}
@@ -156,7 +156,7 @@ export const Statistics = () => {
                     </td>
                     <td className="px-4 md:px-6 py-4 md:py-5 text-on-surface-variant font-medium text-sm md:text-base whitespace-nowrap">{getTeamName(player.teamId)}</td>
                     <td className="px-4 md:px-6 py-4 md:py-5 text-center font-headline font-black text-primary text-lg md:text-xl">{player.goals}</td>
-                    <td className="px-4 md:px-6 py-4 md:py-5 text-center font-headline font-black text-white/90 text-lg md:text-xl">{player.assists}</td>
+                    <td className="px-4 md:px-6 py-4 md:py-5 text-center font-headline font-black text-on-surface/90 text-lg md:text-xl">{player.assists}</td>
                     <td className="px-4 md:px-6 py-4 md:py-5">
                       <div className="flex gap-1">
                         {Array.from({ length: 5 }).map((_, i) => (
@@ -164,7 +164,7 @@ export const Statistics = () => {
                             key={i}
                             className={cn(
                               'w-1 md:w-1.5 h-4 md:h-6 rounded-full',
-                              i < (5 - index) ? 'bg-primary' : 'bg-white/10'
+                              i < (5 - index) ? 'bg-primary' : 'bg-on-surface/10'
                             )}
                           ></div>
                         ))}

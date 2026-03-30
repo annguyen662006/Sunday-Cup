@@ -1,6 +1,6 @@
 export const vi = {
   app: {
-    title: 'JOYKICK HUB',
+    title: 'QUẢN LÝ ',
     subtitle: 'Dữ liệu Thể thao Đỉnh cao',
     admin: 'Người quản trị',
     proMember: 'Thành viên Pro',
