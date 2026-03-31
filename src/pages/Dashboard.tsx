@@ -16,19 +16,19 @@ export const Dashboard = () => {
   const getTeamName = (teamId: string) => teams.find(t => t.id === teamId)?.name;
 
   const renderTable = (isModal = false) => (
-    <table className={cn("w-full text-left border-separate", isModal ? "border-spacing-y-1" : "border-spacing-y-2 md:border-spacing-y-3 min-w-[700px]")}>
+    <table className={cn("w-full text-left border-separate", isModal ? "border-spacing-y-1 table-fixed" : "border-spacing-y-2 md:border-spacing-y-3 min-w-[700px]")}>
       <thead>
         <tr className={cn("text-on-surface-variant font-bold tracking-widest uppercase", isModal ? "text-[8px]" : "text-[10px] md:text-xs")}>
-          <th className={cn("pb-1 md:pb-2", isModal ? "px-1" : "px-3 md:px-6")}>Hạng</th>
-          <th className={cn("pb-1 md:pb-2", isModal ? "px-1" : "px-2 md:px-4")}>Tên đội bóng</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>P</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>W</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>D</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>L</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>GF</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>GA</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>GD</th>
-          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-1" : "px-2 md:px-4")}>PTS</th>
+          <th className={cn("pb-1 md:pb-2", isModal ? "px-0.5 w-[8%]" : "px-3 md:px-6")}>Hạng</th>
+          <th className={cn("pb-1 md:pb-2", isModal ? "px-0.5 w-[32%]" : "px-2 md:px-4")}>Tên đội bóng</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[6%]" : "px-2 md:px-4")}>P</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[6%]" : "px-2 md:px-4")}>W</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[6%]" : "px-2 md:px-4")}>D</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[6%]" : "px-2 md:px-4")}>L</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[7%]" : "px-2 md:px-4")}>GF</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[7%]" : "px-2 md:px-4")}>GA</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[7%]" : "px-2 md:px-4")}>GD</th>
+          <th className={cn("pb-1 md:pb-2 text-center", isModal ? "px-0.5 w-[15%]" : "px-2 md:px-4")}>PTS</th>
         </tr>
       </thead>
       <tbody>

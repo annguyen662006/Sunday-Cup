@@ -10,6 +10,7 @@ interface ManageRoundsModalProps {
 export const ManageRoundsModal = ({ stageId, onClose }: ManageRoundsModalProps) => {
   const { rounds, addRound, deleteRound } = useStore();
   const [newRoundName, setNewRoundName] = useState('');
+  const [newRoundDate, setNewRoundDate] = useState('');
 
   const stageRounds = rounds.filter(r => r.stageId === stageId);
 
@@ -17,9 +18,11 @@ export const ManageRoundsModal = ({ stageId, onClose }: ManageRoundsModalProps) 
     if (!newRoundName.trim()) return;
     addRound({
       stageId,
-      name: newRoundName.trim()
+      name: newRoundName.trim(),
+      date: newRoundDate || undefined
     });
     setNewRoundName('');
+    setNewRoundDate('');
   };
 
   return (
@@ -33,7 +36,7 @@ export const ManageRoundsModal = ({ stageId, onClose }: ManageRoundsModalProps) 
         </div>
         <div className="p-6 space-y-6">
           <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={newRoundName}
@@ -41,10 +44,16 @@ export const ManageRoundsModal = ({ stageId, onClose }: ManageRoundsModalProps) 
                 placeholder="Tên lượt (VD: Lượt 1)"
                 className="flex-1 bg-surface-container-highest border border-on-surface/10 rounded-xl px-4 py-2 text-on-surface outline-none focus:border-primary transition-colors"
               />
+              <input
+                type="date"
+                value={newRoundDate}
+                onChange={(e) => setNewRoundDate(e.target.value)}
+                className="bg-surface-container-highest border border-on-surface/10 rounded-xl px-4 py-2 text-on-surface outline-none focus:border-primary transition-colors"
+              />
               <button
                 onClick={handleCreate}
                 disabled={!newRoundName.trim()}
-                className="bg-primary hover:bg-primary-fixed text-on-primary-fixed p-2 rounded-xl disabled:opacity-50 transition-all"
+                className="bg-primary hover:bg-primary-fixed text-on-primary-fixed p-2 rounded-xl disabled:opacity-50 transition-all flex items-center justify-center"
               >
                 <Plus className="w-6 h-6" />
               </button>
@@ -54,7 +63,10 @@ export const ManageRoundsModal = ({ stageId, onClose }: ManageRoundsModalProps) 
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {stageRounds.map((r) => (
               <div key={r.id} className="flex items-center justify-between p-3 bg-surface-container-highest/50 rounded-xl border border-on-surface/5">
-                <div className="font-medium text-on-surface">{r.name}</div>
+                <div className="font-medium text-on-surface">
+                  {r.name}
+                  {r.date && <span className="ml-2 text-sm text-on-surface-variant">({r.date.split('-').reverse().join('/')})</span>}
+                </div>
                 <button
                   onClick={() => deleteRound(r.id)}
                   className="p-2 text-error hover:bg-error/10 rounded-lg transition-colors"

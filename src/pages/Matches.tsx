@@ -208,7 +208,7 @@ export const Matches = () => {
                 {stageRounds.length === 0 && <option value="" disabled>Chưa có lượt đấu</option>}
                 {stageRounds.map((r) => (
                   <option key={r.id} value={r.id} className="bg-surface text-on-surface">
-                    {r.name}
+                    {r.name} {r.date ? `(${formatDate(r.date)})` : ''}
                   </option>
                 ))}
               </select>

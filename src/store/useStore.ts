@@ -147,16 +147,30 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   addTournament: async (tournament) => {
+    const tempId = Date.now().toString();
+    const tempTournament = { id: tempId, name: tournament.name };
+
+    set((state) => ({
+      tournaments: [...state.tournaments, tempTournament],
+    }));
+
     const newTournament = {
-      id: Math.random().toString(36).substr(2, 9),
       name: tournament.name
     };
 
-    set((state) => ({
-      tournaments: [...state.tournaments, newTournament],
-    }));
-
-    await supabase.from('tournaments').insert([newTournament]);
+    const { data, error } = await supabase.from('tournaments').insert([newTournament]).select().single();
+    if (error) {
+      console.error('Error adding tournament:', error);
+      set((state) => ({
+        tournaments: state.tournaments.filter(t => t.id !== tempId)
+      }));
+    } else if (data) {
+      set((state) => ({
+        tournaments: state.tournaments.map(t => 
+          t.id === tempId ? { ...t, id: data.id } : t
+        )
+      }));
+    }
   },
 
   updateTournament: async (id, tournament) => {
@@ -184,39 +198,58 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   addStage: async (stage) => {
+    const tempStageId = Date.now().toString();
+    
+    set((state) => ({
+      stages: [...state.stages, { ...stage, id: tempStageId }],
+    }));
+
     const newStage = {
-      id: Math.random().toString(36).substr(2, 9),
       tournament_id: stage.tournamentId,
       name: stage.name,
       start_date: stage.date
     };
 
-    set((state) => ({
-      stages: [...state.stages, { ...stage, id: newStage.id }],
-    }));
+    const { data: stageData, error: stageError } = await supabase.from('stages').insert([newStage]).select().single();
+    
+    if (stageError) {
+      console.error('Error adding stage:', stageError);
+      set((state) => ({
+        stages: state.stages.filter(s => s.id !== tempStageId)
+      }));
+      return;
+    }
 
-    await supabase.from('stages').insert([newStage]);
+    if (stageData) {
+      set((state) => ({
+        stages: state.stages.map(s => 
+          s.id === tempStageId ? { ...s, id: stageData.id } : s
+        )
+      }));
 
-    // Auto-generate 10 rounds for the new stage
-    const newRounds = Array.from({ length: 10 }).map((_, i) => ({
-      id: Math.random().toString(36).substr(2, 9),
-      stage_id: newStage.id,
-      tournament_id: newStage.tournament_id,
-      name: `Lượt ${i + 1}`
-    }));
+      // Auto-generate 10 rounds for the new stage
+      const newRounds = Array.from({ length: 10 }).map((_, i) => ({
+        stage_id: stageData.id,
+        name: `Lượt ${i + 1}`
+      }));
 
-    set((state) => ({
-      rounds: [
-        ...state.rounds,
-        ...newRounds.map(r => ({
-          id: r.id,
-          stageId: r.stage_id,
-          name: r.name
-        }))
-      ]
-    }));
-
-    await supabase.from('rounds').insert(newRounds);
+      const { data: roundsData, error: roundsError } = await supabase.from('rounds').insert(newRounds).select();
+      
+      if (roundsError) {
+        console.error('Error adding rounds:', roundsError);
+      } else if (roundsData) {
+        set((state) => ({
+          rounds: [
+            ...state.rounds,
+            ...roundsData.map(r => ({
+              id: r.id,
+              stageId: r.stage_id,
+              name: r.name
+            }))
+          ]
+        }));
+      }
+    }
   },
 
   updateStage: async (id, stage) => {
@@ -246,17 +279,31 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   addRound: async (round) => {
-    const newRound = {
-      id: Math.random().toString(36).substr(2, 9),
-      stage_id: round.stageId,
-      name: round.name
-    };
+    const tempId = Date.now().toString();
 
     set((state) => ({
-      rounds: [...state.rounds, { ...round, id: newRound.id }],
+      rounds: [...state.rounds, { ...round, id: tempId }],
     }));
 
-    await supabase.from('rounds').insert([newRound]);
+    const newRound = {
+      stage_id: round.stageId,
+      name: round.name,
+      start_date: round.date
+    };
+
+    const { data, error } = await supabase.from('rounds').insert([newRound]).select().single();
+    if (error) {
+      console.error('Error adding round:', error);
+      set((state) => ({
+        rounds: state.rounds.filter(r => r.id !== tempId)
+      }));
+    } else if (data) {
+      set((state) => ({
+        rounds: state.rounds.map(r => 
+          r.id === tempId ? { ...r, id: data.id } : r
+        )
+      }));
+    }
   },
 
   updateRound: async (id, round) => {
@@ -267,6 +314,7 @@ export const useStore = create<StoreState>()((set, get) => ({
     const updates: any = {};
     if (round.name !== undefined) updates.name = round.name;
     if (round.stageId !== undefined) updates.stage_id = round.stageId;
+    if (round.date !== undefined) updates.start_date = round.date;
 
     await supabase.from('rounds').update(updates).eq('id', id);
   },
@@ -286,15 +334,34 @@ export const useStore = create<StoreState>()((set, get) => ({
         m.id === matchId ? { ...m, homeScore, awayScore } : m
       ),
     }));
-    await supabase
+    const { error } = await supabase
       .from('matches')
       .update({ home_score: homeScore, away_score: awayScore })
       .eq('id', matchId);
+    if (error) {
+      console.error('Error updating match score:', error);
+    }
   },
 
   addMatch: async (match) => {
+    const tempId = Date.now();
+    
+    // Optimistic update with temporary ID
+    set((state) => ({
+      matches: [
+        ...state.matches,
+        {
+          ...match,
+          id: tempId,
+          status: 'live',
+          homeScore: 0,
+          awayScore: 0,
+          events: [],
+        },
+      ],
+    }));
+
     const newMatch = {
-      id: Date.now(),
       home_id: match.homeId,
       away_id: match.awayId,
       home_score: 0,
@@ -304,21 +371,24 @@ export const useStore = create<StoreState>()((set, get) => ({
       events: []
     };
 
-    set((state) => ({
-      matches: [
-        ...state.matches,
-        {
-          ...match,
-          id: newMatch.id,
-          status: 'live',
-          homeScore: 0,
-          awayScore: 0,
-          events: [],
-        },
-      ],
-    }));
-
-    await supabase.from('matches').insert([newMatch]);
+    const { data, error } = await supabase.from('matches').insert([newMatch]).select().single();
+    if (error) {
+      console.error('Error adding match:', error);
+      // Revert optimistic update on error
+      set((state) => ({
+        matches: state.matches.filter(m => m.id !== tempId)
+      }));
+    } else if (data) {
+      // Update the temporary ID with the real ID from database
+      set((state) => ({
+        matches: state.matches.map(m => 
+          m.id === tempId ? {
+            ...m,
+            id: data.id
+          } : m
+        )
+      }));
+    }
   },
 
   updateMatchStatus: async (matchId, status) => {
@@ -327,10 +397,13 @@ export const useStore = create<StoreState>()((set, get) => ({
         m.id === matchId ? { ...m, status } : m
       ),
     }));
-    await supabase
+    const { error } = await supabase
       .from('matches')
       .update({ status })
       .eq('id', matchId);
+    if (error) {
+      console.error('Error updating match status:', error);
+    }
   },
 
   addMatchEvent: async (matchId, event) => {
@@ -354,18 +427,20 @@ export const useStore = create<StoreState>()((set, get) => ({
       ),
     }));
 
-    await supabase
+    const { error: matchError } = await supabase
       .from('matches')
       .update({ events, home_score: homeScore, away_score: awayScore })
       .eq('id', matchId);
+    if (matchError) console.error('Error adding match event:', matchError);
 
     if (event.type === 'goal') {
       const player = state.players.find(p => p.id === event.playerId);
       if (player) {
-        await supabase
+        const { error: playerError } = await supabase
           .from('players')
           .update({ goals: (player.goals || 0) + 1 })
           .eq('id', event.playerId);
+        if (playerError) console.error('Error updating player goals:', playerError);
       }
     }
   },
@@ -394,18 +469,20 @@ export const useStore = create<StoreState>()((set, get) => ({
       ),
     }));
 
-    await supabase
+    const { error: matchError } = await supabase
       .from('matches')
       .update({ events, home_score: homeScore, away_score: awayScore })
       .eq('id', matchId);
+    if (matchError) console.error('Error removing match event:', matchError);
 
     if (lastEvent.type === 'goal') {
       const player = state.players.find(p => p.id === lastEvent.playerId);
       if (player) {
-        await supabase
+        const { error: playerError } = await supabase
           .from('players')
           .update({ goals: Math.max(0, (player.goals || 0) - 1) })
           .eq('id', lastEvent.playerId);
+        if (playerError) console.error('Error updating player goals:', playerError);
       }
     }
   },
@@ -448,18 +525,31 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   addTeam: async (team) => {
+    const tempId = team.id || Date.now().toString();
+
+    set((state) => ({
+      teams: [...state.teams, { ...team, id: tempId }],
+    }));
+
     const newTeam = {
-      id: team.id || Math.random().toString(36).substr(2, 9),
       name: team.name,
       short_name: team.shortName,
       logo: team.logo
     };
 
-    set((state) => ({
-      teams: [...state.teams, { ...team, id: newTeam.id }],
-    }));
-
-    await supabase.from('teams').insert([newTeam]);
+    const { data, error } = await supabase.from('teams').insert([newTeam]).select().single();
+    if (error) {
+      console.error('Error adding team:', error);
+      set((state) => ({
+        teams: state.teams.filter(t => t.id !== tempId)
+      }));
+    } else if (data) {
+      set((state) => ({
+        teams: state.teams.map(t => 
+          t.id === tempId ? { ...t, id: data.id } : t
+        )
+      }));
+    }
   },
 
   updateTeam: async (id, team) => {
@@ -512,8 +602,13 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
 
   addPlayer: async (player) => {
+    const tempId = Date.now();
+
+    set((state) => ({
+      players: [...state.players, { ...player, id: tempId }],
+    }));
+
     const newPlayer = {
-      id: Date.now(),
       name: player.name,
       team_id: player.teamId,
       birth_year: player.birthYear,
@@ -522,11 +617,19 @@ export const useStore = create<StoreState>()((set, get) => ({
       assists: player.assists || 0
     };
 
-    set((state) => ({
-      players: [...state.players, { ...player, id: newPlayer.id }],
-    }));
-
-    await supabase.from('players').insert([newPlayer]);
+    const { data, error } = await supabase.from('players').insert([newPlayer]).select().single();
+    if (error) {
+      console.error('Error adding player:', error);
+      set((state) => ({
+        players: state.players.filter(p => p.id !== tempId)
+      }));
+    } else if (data) {
+      set((state) => ({
+        players: state.players.map(p => 
+          p.id === tempId ? { ...p, id: data.id } : p
+        )
+      }));
+    }
   },
 
   updatePlayer: async (id, player) => {
