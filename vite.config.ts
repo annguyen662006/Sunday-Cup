@@ -12,7 +12,6 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
           name: 'Joykick League',
           short_name: 'Joykick',
@@ -22,19 +21,19 @@ export default defineConfig(({mode}) => {
           display: 'standalone',
           icons: [
             {
-              src: 'icon.svg',
+              src: 'https://raw.githubusercontent.com/annguyen662006/Storage/refs/heads/main/SundayCup/icon/192x192.png',
               sizes: '192x192',
-              type: 'image/svg+xml'
+              type: 'image/png'
             },
             {
-              src: 'icon.svg',
+              src: 'https://raw.githubusercontent.com/annguyen662006/Storage/refs/heads/main/SundayCup/icon/512x512.png',
               sizes: '512x512',
-              type: 'image/svg+xml'
+              type: 'image/png'
             },
             {
-              src: 'icon.svg',
+              src: 'https://raw.githubusercontent.com/annguyen662006/Storage/refs/heads/main/SundayCup/icon/512x512.png',
               sizes: '512x512',
-              type: 'image/svg+xml',
+              type: 'image/png',
               purpose: 'any maskable'
             }
           ]
