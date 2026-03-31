@@ -1,11 +1,14 @@
 import { create } from 'zustand';
-import { Team, Match, Player, MatchEvent, User } from '../types';
+import { Team, Match, Player, MatchEvent, User, Tournament, Stage, Round } from '../types';
 import { supabase } from '../lib/supabase';
 import { deleteImage } from '../lib/storage';
 
 interface StoreState {
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
+  tournaments: Tournament[];
+  stages: Stage[];
+  rounds: Round[];
   teams: Team[];
   matches: Match[];
   players: Player[];
@@ -13,6 +16,15 @@ interface StoreState {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   fetchData: () => Promise<void>;
+  addTournament: (tournament: Omit<Tournament, 'id'>) => Promise<void>;
+  updateTournament: (id: string, tournament: Partial<Tournament>) => Promise<void>;
+  deleteTournament: (id: string) => Promise<void>;
+  addStage: (stage: Omit<Stage, 'id'>) => Promise<void>;
+  updateStage: (id: string, stage: Partial<Stage>) => Promise<void>;
+  deleteStage: (id: string) => Promise<void>;
+  addRound: (round: Omit<Round, 'id'>) => Promise<void>;
+  updateRound: (id: string, round: Partial<Round>) => Promise<void>;
+  deleteRound: (id: string) => Promise<void>;
   updateMatchScore: (matchId: number, homeScore: number, awayScore: number) => Promise<void>;
   addMatch: (match: Omit<Match, 'id' | 'status' | 'homeScore' | 'awayScore' | 'events'>) => Promise<void>;
   updateMatchStatus: (matchId: number, status: 'pending' | 'live' | 'played') => Promise<void>;
@@ -37,6 +49,9 @@ export const useStore = create<StoreState>()((set, get) => ({
     }
     set({ currentUser: user });
   },
+  tournaments: [],
+  stages: [],
+  rounds: [],
   teams: [],
   matches: [],
   players: [],
@@ -60,15 +75,40 @@ export const useStore = create<StoreState>()((set, get) => ({
   fetchData: async () => {
     set({ isLoading: true });
     try {
-      const [teamsRes, playersRes, matchesRes] = await Promise.all([
+      const [tournamentsRes, stagesRes, roundsRes, teamsRes, playersRes, matchesRes] = await Promise.all([
+        supabase.from('tournaments').select('*'),
+        supabase.from('stages').select('*'),
+        supabase.from('rounds').select('*'),
         supabase.from('teams').select('*'),
         supabase.from('players').select('*'),
         supabase.from('matches').select('*')
       ]);
 
+      if (tournamentsRes.error) throw tournamentsRes.error;
+      if (stagesRes.error) throw stagesRes.error;
+      if (roundsRes.error) throw roundsRes.error;
       if (teamsRes.error) throw teamsRes.error;
       if (playersRes.error) throw playersRes.error;
       if (matchesRes.error) throw matchesRes.error;
+
+      const tournaments = tournamentsRes.data.map(t => ({
+        id: t.id,
+        name: t.name
+      }));
+
+      const stages = stagesRes.data.map(s => ({
+        id: s.id,
+        tournamentId: s.tournament_id,
+        name: s.name,
+        date: s.start_date
+      }));
+
+      const rounds = roundsRes.data.map(r => ({
+        id: r.id,
+        stageId: r.stage_id,
+        name: r.name,
+        date: r.start_date
+      }));
 
       // Map snake_case to camelCase
       const teams = teamsRes.data.map(t => ({
@@ -95,16 +135,149 @@ export const useStore = create<StoreState>()((set, get) => ({
         homeScore: m.home_score,
         awayScore: m.away_score,
         status: m.status,
-        round: m.round,
-        date: m.date,
+        roundId: m.round_id,
         events: m.events || []
       }));
 
-      set({ teams, players, matches, isLoading: false });
+      set({ tournaments, stages, rounds, teams, players, matches, isLoading: false });
     } catch (error) {
       console.error('Error fetching data:', error);
       set({ isLoading: false });
     }
+  },
+
+  addTournament: async (tournament) => {
+    const newTournament = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: tournament.name
+    };
+
+    set((state) => ({
+      tournaments: [...state.tournaments, newTournament],
+    }));
+
+    await supabase.from('tournaments').insert([newTournament]);
+  },
+
+  updateTournament: async (id, tournament) => {
+    set((state) => ({
+      tournaments: state.tournaments.map((t) => (t.id === id ? { ...t, ...tournament } : t)),
+    }));
+
+    await supabase.from('tournaments').update(tournament).eq('id', id);
+  },
+
+  deleteTournament: async (id) => {
+    set((state) => {
+      const stagesToDelete = state.stages.filter(s => s.tournamentId === id).map(s => s.id);
+      const roundsToDelete = state.rounds.filter(r => stagesToDelete.includes(r.stageId)).map(r => r.id);
+      
+      return {
+        tournaments: state.tournaments.filter((t) => t.id !== id),
+        stages: state.stages.filter((s) => s.tournamentId !== id),
+        rounds: state.rounds.filter((r) => !stagesToDelete.includes(r.stageId)),
+        matches: state.matches.filter((m) => !roundsToDelete.includes(m.roundId))
+      };
+    });
+
+    await supabase.from('tournaments').delete().eq('id', id);
+  },
+
+  addStage: async (stage) => {
+    const newStage = {
+      id: Math.random().toString(36).substr(2, 9),
+      tournament_id: stage.tournamentId,
+      name: stage.name,
+      start_date: stage.date
+    };
+
+    set((state) => ({
+      stages: [...state.stages, { ...stage, id: newStage.id }],
+    }));
+
+    await supabase.from('stages').insert([newStage]);
+
+    // Auto-generate 10 rounds for the new stage
+    const newRounds = Array.from({ length: 10 }).map((_, i) => ({
+      id: Math.random().toString(36).substr(2, 9),
+      stage_id: newStage.id,
+      tournament_id: newStage.tournament_id,
+      name: `Lượt ${i + 1}`
+    }));
+
+    set((state) => ({
+      rounds: [
+        ...state.rounds,
+        ...newRounds.map(r => ({
+          id: r.id,
+          stageId: r.stage_id,
+          name: r.name
+        }))
+      ]
+    }));
+
+    await supabase.from('rounds').insert(newRounds);
+  },
+
+  updateStage: async (id, stage) => {
+    set((state) => ({
+      stages: state.stages.map((s) => (s.id === id ? { ...s, ...stage } : s)),
+    }));
+
+    const updates: any = {};
+    if (stage.name !== undefined) updates.name = stage.name;
+    if (stage.date !== undefined) updates.start_date = stage.date;
+    if (stage.tournamentId !== undefined) updates.tournament_id = stage.tournamentId;
+
+    await supabase.from('stages').update(updates).eq('id', id);
+  },
+
+  deleteStage: async (id) => {
+    set((state) => {
+      const roundsToDelete = state.rounds.filter(r => r.stageId === id).map(r => r.id);
+      return {
+        stages: state.stages.filter((s) => s.id !== id),
+        rounds: state.rounds.filter((r) => r.stageId !== id),
+        matches: state.matches.filter((m) => !roundsToDelete.includes(m.roundId)),
+      };
+    });
+
+    await supabase.from('stages').delete().eq('id', id);
+  },
+
+  addRound: async (round) => {
+    const newRound = {
+      id: Math.random().toString(36).substr(2, 9),
+      stage_id: round.stageId,
+      name: round.name
+    };
+
+    set((state) => ({
+      rounds: [...state.rounds, { ...round, id: newRound.id }],
+    }));
+
+    await supabase.from('rounds').insert([newRound]);
+  },
+
+  updateRound: async (id, round) => {
+    set((state) => ({
+      rounds: state.rounds.map((r) => (r.id === id ? { ...r, ...round } : r)),
+    }));
+
+    const updates: any = {};
+    if (round.name !== undefined) updates.name = round.name;
+    if (round.stageId !== undefined) updates.stage_id = round.stageId;
+
+    await supabase.from('rounds').update(updates).eq('id', id);
+  },
+
+  deleteRound: async (id) => {
+    set((state) => ({
+      rounds: state.rounds.filter((r) => r.id !== id),
+      matches: state.matches.filter((m) => m.roundId !== id),
+    }));
+
+    await supabase.from('rounds').delete().eq('id', id);
   },
 
   updateMatchScore: async (matchId, homeScore, awayScore) => {
@@ -127,8 +300,7 @@ export const useStore = create<StoreState>()((set, get) => ({
       home_score: 0,
       away_score: 0,
       status: 'live',
-      round: match.round,
-      date: match.date,
+      round_id: match.roundId,
       events: []
     };
 

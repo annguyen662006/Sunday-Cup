@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { supabase } from '../lib/supabase';
 import { GlassCard } from '../components/GlassCard';
-import { KeyRound, User } from 'lucide-react';
+import { Key, User } from 'lucide-react';
 
 export function Login() {
   const [username, setUsername] = useState('');
@@ -84,7 +84,7 @@ export function Login() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <KeyRound className="h-5 w-5 text-on-surface-variant" />
+                  <Key className="h-5 w-5 text-on-surface-variant" />
                 </div>
                 <input
                   type="password"

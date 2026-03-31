@@ -20,10 +20,28 @@ export interface MatchEvent {
   timestamp: string;
 }
 
+export interface Tournament {
+  id: string;
+  name: string;
+}
+
+export interface Stage {
+  id: string;
+  tournamentId: string;
+  name: string;
+  date: string;
+}
+
+export interface Round {
+  id: string;
+  stageId: string;
+  name: string;
+  date?: string;
+}
+
 export interface Match {
   id: number;
-  round: number;
-  date: string;
+  roundId: string;
   homeId: string;
   awayId: string;
   homeScore: number | null;

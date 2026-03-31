@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { supabase } from '../lib/supabase';
 import { GlassCard } from '../components/GlassCard';
-import { UserPlus, Users, Shield, Trash2, KeyRound } from 'lucide-react';
+import { UserPlus, Users, Shield, Trash2, Key } from 'lucide-react';
 import { User } from '../types';
 
 export function Admin() {
@@ -153,7 +153,7 @@ export function Admin() {
 
               <div className="pt-2">
                 <p className="text-xs text-on-surface-variant mb-4 flex items-center gap-1">
-                  <KeyRound className="w-3 h-3" />
+                  <Key className="w-3 h-3" />
                   Mật khẩu mặc định: <span className="font-mono font-bold text-on-surface">123456@</span>
                 </p>
                 <button

@@ -3,20 +3,22 @@ import { useStore } from '../store/useStore';
 import { X } from 'lucide-react';
 
 interface CreateMatchModalProps {
-  round: number;
+  roundId: string;
   onClose: () => void;
 }
 
-export const CreateMatchModal = ({ round, onClose }: CreateMatchModalProps) => {
-  const { teams, addMatch } = useStore();
+export const CreateMatchModal = ({ roundId, onClose }: CreateMatchModalProps) => {
+  const { teams, addMatch, rounds, stages } = useStore();
   const [homeId, setHomeId] = useState<string>('');
   const [awayId, setAwayId] = useState<string>('');
+
+  const round = rounds.find(r => r.id === roundId);
+  const stage = stages.find(s => s.id === round?.stageId);
 
   const handleCreate = () => {
     if (!homeId || !awayId || homeId === awayId) return;
     addMatch({
-      round,
-      date: new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      roundId,
       homeId,
       awayId,
     });
@@ -27,7 +29,7 @@ export const CreateMatchModal = ({ round, onClose }: CreateMatchModalProps) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-surface-container border border-on-surface/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
         <div className="p-4 border-b border-on-surface/10 flex items-center justify-between bg-on-surface/5">
-          <h3 className="font-headline font-bold text-lg text-on-surface">Tạo trận đấu - Lượt {round}</h3>
+          <h3 className="font-headline font-bold text-lg text-on-surface">Tạo trận đấu - {stage?.name} - {round?.name}</h3>
           <button onClick={onClose} className="p-1 hover:bg-on-surface/10 rounded-lg transition-colors text-on-surface">
             <X className="w-5 h-5" />
           </button>

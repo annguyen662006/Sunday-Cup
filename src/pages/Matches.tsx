@@ -1,28 +1,86 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { vi } from '../lang/vi';
 import { GlassCard } from '../components/GlassCard';
-import { ChevronDown, Calendar, Plus, Minus, CheckCircle, PlusCircle, X } from 'lucide-react';
+import { ChevronDown, Calendar, Plus, Minus, CheckCircle, PlusCircle, X, Settings } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { CreateMatchModal } from '../components/CreateMatchModal';
 import { SelectPlayerModal } from '../components/SelectPlayerModal';
 import { ConfirmSaveMatchModal } from '../components/ConfirmSaveMatchModal';
 import { ConfirmDeleteMatchModal } from '../components/ConfirmDeleteMatchModal';
+import { ManageTournamentsModal } from '../components/ManageTournamentsModal';
+import { ManageStagesModal } from '../components/ManageStagesModal';
+import { ManageRoundsModal } from '../components/ManageRoundsModal';
 
 export const Matches = () => {
-  const { matches, teams, players, updateMatchStatus, addMatchEvent, removeLastMatchEvent, deleteMatch } = useStore();
-  const [selectedRound, setSelectedRound] = useState<number>(1);
+  const { matches, teams, players, tournaments, stages, rounds, updateMatchStatus, addMatchEvent, removeLastMatchEvent, deleteMatch } = useStore();
+  const [selectedTournamentId, setSelectedTournamentId] = useState<string>('');
+  const [selectedStageId, setSelectedStageId] = useState<string>('');
+  const [selectedRoundId, setSelectedRoundId] = useState<string>('');
+  
+  const [isManageTournamentsOpen, setIsManageTournamentsOpen] = useState(false);
+  const [isManageStagesOpen, setIsManageStagesOpen] = useState(false);
+  const [isManageRoundsOpen, setIsManageRoundsOpen] = useState(false);
+  
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [scoringTeam, setScoringTeam] = useState<{ matchId: number, teamId: string } | null>(null);
   const [confirmingMatchId, setConfirmingMatchId] = useState<number | null>(null);
   const [deletingMatchId, setDeletingMatchId] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (tournaments.length > 0 && !selectedTournamentId) {
+      setSelectedTournamentId(tournaments[0].id);
+    }
+  }, [tournaments, selectedTournamentId]);
+
+  const tournamentStages = useMemo(() => {
+    return stages.filter(s => s.tournamentId === selectedTournamentId);
+  }, [stages, selectedTournamentId]);
+
+  useEffect(() => {
+    if (tournamentStages.length > 0) {
+      if (!selectedStageId || !tournamentStages.find(s => s.id === selectedStageId)) {
+        setSelectedStageId(tournamentStages[0].id);
+      }
+    } else {
+      setSelectedStageId('');
+    }
+  }, [tournamentStages, selectedStageId]);
+
+  const stageRounds = useMemo(() => {
+    return rounds.filter(r => r.stageId === selectedStageId);
+  }, [rounds, selectedStageId]);
+
+  useEffect(() => {
+    if (stageRounds.length > 0) {
+      if (!selectedRoundId || !stageRounds.find(r => r.id === selectedRoundId)) {
+        setSelectedRoundId(stageRounds[0].id);
+      }
+    } else {
+      setSelectedRoundId('');
+    }
+  }, [stageRounds, selectedRoundId]);
+
   const filteredMatches = useMemo(() => {
-    return matches.filter((m) => m.round === selectedRound);
-  }, [matches, selectedRound]);
+    if (!selectedRoundId) return [];
+    return matches.filter((m) => m.roundId === selectedRoundId);
+  }, [matches, selectedRoundId]);
+
+  const selectedTournament = tournaments.find(t => t.id === selectedTournamentId);
+  const selectedStage = stages.find(s => s.id === selectedStageId);
+  const selectedRound = rounds.find(r => r.id === selectedRoundId);
 
   const getTeam = (teamId: string) => teams.find((t) => t.id === teamId);
   const getPlayerName = (playerId: number) => players.find(p => p.id === playerId)?.name;
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateString;
+  };
 
   const handleGoalScored = (playerId: number) => {
     if (!scoringTeam) return;
@@ -48,39 +106,120 @@ export const Matches = () => {
       {/* Page Header & Filter */}
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-8 md:mb-12">
         <div>
-          <h3 className="font-headline font-extrabold text-3xl md:text-4xl tracking-tighter text-on-surface mb-1 md:mb-2 italic uppercase">
-            {vi.matches.leagueName}
-          </h3>
+          <div className="flex items-center gap-3 mb-1 md:mb-2">
+            <h3 className="font-headline font-extrabold text-3xl md:text-4xl tracking-tighter text-on-surface italic uppercase">
+              {selectedTournament ? selectedTournament.name : vi.matches.leagueName}
+            </h3>
+            <button
+              onClick={() => setIsManageTournamentsOpen(true)}
+              className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+              title="Quản lý giải đấu"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+          </div>
           <p className="text-on-surface-variant font-medium text-sm md:text-base">
             {vi.matches.seasonInfo} • <span className="text-primary">{vi.matches.liveUpdate}</span>
           </p>
         </div>
 
-        <div className="relative w-full md:w-auto">
-          <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2 block ml-1">
-            {vi.matches.selectPhase}{filteredMatches.length > 0 && filteredMatches[0].date ? ` NGÀY ${filteredMatches[0].date}` : ''}
-          </label>
-          <div className="flex items-center gap-2 bg-on-surface/5 backdrop-blur-md rounded-xl p-1 border border-on-surface/5 shadow-xl w-full md:w-auto">
-            <select
-              value={selectedRound}
-              onChange={(e) => setSelectedRound(Number(e.target.value))}
-              className="appearance-none bg-transparent text-on-surface text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 md:flex-none"
-            >
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((round) => (
-                <option key={round} value={round} className="bg-surface text-on-surface">
-                  {vi.matches.round} {round}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 text-on-surface/50 mr-2 pointer-events-none absolute right-12 md:static" />
-            <div className="h-6 w-[1px] bg-on-surface/10 mx-1 hidden md:block"></div>
-            <button className="p-3 md:p-2 rounded-lg text-on-surface-variant hover:text-on-surface transition-all shrink-0">
-              <Calendar className="w-5 h-5" />
-            </button>
+        <div className="flex flex-col sm:flex-row items-end gap-4 w-full md:w-auto">
+          {/* Tournament Selection */}
+          <div className="relative w-full sm:w-auto">
+            <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2 block ml-1">
+              Giải đấu
+            </label>
+            <div className="flex items-center gap-2 bg-on-surface/5 backdrop-blur-md rounded-xl p-1 border border-on-surface/5 shadow-xl w-full sm:w-auto">
+              <select
+                value={selectedTournamentId}
+                onChange={(e) => setSelectedTournamentId(e.target.value)}
+                className="appearance-none bg-transparent text-on-surface text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 sm:flex-none"
+              >
+                {tournaments.length === 0 && <option value="" disabled>Chưa có giải đấu</option>}
+                {tournaments.map((t) => (
+                  <option key={t.id} value={t.id} className="bg-surface text-on-surface">
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-4 h-4 text-on-surface/50 mr-2 pointer-events-none absolute right-4 sm:static" />
+            </div>
           </div>
+
+          {/* Stage Selection */}
+          <div className="relative w-full sm:w-auto">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold ml-1">
+                Vòng thi đấu
+              </label>
+              {selectedTournamentId && (
+                <button
+                  onClick={() => setIsManageStagesOpen(true)}
+                  className="text-[10px] uppercase tracking-widest text-primary font-bold hover:underline"
+                >
+                  Quản lý
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2 bg-on-surface/5 backdrop-blur-md rounded-xl p-1 border border-on-surface/5 shadow-xl w-full sm:w-auto">
+              <select
+                value={selectedStageId}
+                onChange={(e) => setSelectedStageId(e.target.value)}
+                disabled={!selectedTournamentId || tournamentStages.length === 0}
+                className="appearance-none bg-transparent text-on-surface text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 sm:flex-none disabled:opacity-50"
+              >
+                {tournamentStages.length === 0 && <option value="" disabled>Chưa có vòng đấu</option>}
+                {tournamentStages.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-surface text-on-surface">
+                    {s.name} {s.date ? `(${formatDate(s.date)})` : ''}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-4 h-4 text-on-surface/50 mr-2 pointer-events-none absolute right-12 sm:static" />
+              <div className="h-6 w-[1px] bg-on-surface/10 mx-1 hidden sm:block"></div>
+              <button className="p-3 md:p-2 rounded-lg text-on-surface-variant hover:text-on-surface transition-all shrink-0">
+                <Calendar className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Round Selection */}
+          <div className="relative w-full sm:w-auto">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold ml-1">
+                Lượt thi đấu
+              </label>
+              {selectedStageId && (
+                <button
+                  onClick={() => setIsManageRoundsOpen(true)}
+                  className="text-[10px] uppercase tracking-widest text-primary font-bold hover:underline"
+                >
+                  Quản lý
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2 bg-on-surface/5 backdrop-blur-md rounded-xl p-1 border border-on-surface/5 shadow-xl w-full sm:w-auto">
+              <select
+                value={selectedRoundId}
+                onChange={(e) => setSelectedRoundId(e.target.value)}
+                disabled={!selectedStageId || stageRounds.length === 0}
+                className="appearance-none bg-transparent text-on-surface text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 sm:flex-none disabled:opacity-50"
+              >
+                {stageRounds.length === 0 && <option value="" disabled>Chưa có lượt đấu</option>}
+                {stageRounds.map((r) => (
+                  <option key={r.id} value={r.id} className="bg-surface text-on-surface">
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-4 h-4 text-on-surface/50 mr-2 pointer-events-none absolute right-4 sm:static" />
+            </div>
+          </div>
+
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="mt-4 md:mt-0 md:ml-4 w-full md:w-auto bg-primary/20 hover:bg-primary/30 text-primary font-bold py-3 md:py-2 px-4 rounded-xl border border-primary/30 transition-all flex items-center justify-center gap-2"
+            disabled={!selectedRoundId}
+            className="w-full sm:w-auto bg-primary/20 hover:bg-primary/30 text-primary font-bold py-3 md:py-2 px-4 rounded-xl border border-primary/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <PlusCircle className="w-5 h-5" />
             Tạo trận đấu
@@ -226,7 +365,7 @@ export const Matches = () => {
                 {/* Action */}
                 <div className="w-full md:w-auto md:pl-4 md:border-l border-on-surface/5 pt-3 md:pt-0 border-t md:border-t-0 mt-2 md:mt-0 flex flex-col items-center justify-center gap-2">
                   <div className="text-xs text-on-surface/40 font-medium">
-                    {match.date}
+                    {formatDate(selectedStage?.date)}
                   </div>
                   {match.status === 'played' ? (
                     <div className="w-full md:w-auto bg-surface-container-highest text-on-surface/50 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 text-sm uppercase tracking-tight">
@@ -275,8 +414,17 @@ export const Matches = () => {
         )}
       </div>
 
-      {isCreateModalOpen && (
-        <CreateMatchModal round={selectedRound} onClose={() => setIsCreateModalOpen(false)} />
+      {isCreateModalOpen && selectedRoundId && (
+        <CreateMatchModal roundId={selectedRoundId} onClose={() => setIsCreateModalOpen(false)} />
+      )}
+      {isManageTournamentsOpen && (
+        <ManageTournamentsModal onClose={() => setIsManageTournamentsOpen(false)} />
+      )}
+      {isManageStagesOpen && selectedTournamentId && (
+        <ManageStagesModal tournamentId={selectedTournamentId} onClose={() => setIsManageStagesOpen(false)} />
+      )}
+      {isManageRoundsOpen && selectedStageId && (
+        <ManageRoundsModal stageId={selectedStageId} onClose={() => setIsManageRoundsOpen(false)} />
       )}
       {scoringTeam && (
         <SelectPlayerModal 
