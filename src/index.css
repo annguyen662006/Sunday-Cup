@@ -37,12 +37,12 @@
   --tertiary: #ff5722;
   --error: #d32f2f;
   
-  --surface: #f8f9fa;
+  --surface: #ffffff;
   --surface-container-lowest: #ffffff;
-  --surface-container-low: #f1f3f4;
-  --surface-container: #e8eaed;
-  --surface-container-high: #dadce0;
-  --surface-container-highest: #bdc1c6;
+  --surface-container-low: #ffffff;
+  --surface-container: #f8f9fa;
+  --surface-container-high: #f1f3f4;
+  --surface-container-highest: #e8eaed;
   
   --on-surface: #202124;
   --on-surface-variant: #5f6368;
@@ -78,15 +78,18 @@
 
 body {
   background-color: var(--color-surface);
-  background-image: 
-      radial-gradient(at 0% 0%, color-mix(in srgb, var(--primary) 8%, transparent) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, color-mix(in srgb, var(--secondary) 8%, transparent) 0px, transparent 50%);
   min-height: 100vh;
   color: var(--color-on-surface);
   font-family: var(--font-body);
 }
 
-.mesh-gradient {
+.dark body {
+  background-image: 
+      radial-gradient(at 0% 0%, color-mix(in srgb, var(--primary) 8%, transparent) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, color-mix(in srgb, var(--secondary) 8%, transparent) 0px, transparent 50%);
+}
+
+.dark .mesh-gradient {
   background: radial-gradient(at 0% 0%, color-mix(in srgb, var(--primary) 15%, transparent) 0px, transparent 50%),
               radial-gradient(at 100% 0%, color-mix(in srgb, var(--secondary) 10%, transparent) 0px, transparent 50%),
               radial-gradient(at 100% 100%, color-mix(in srgb, var(--primary) 10%, transparent) 0px, transparent 50%),
@@ -129,4 +132,46 @@ input[type="number"] {
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* GlassCard Base Styles */
+.glass-card {
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* Light Mode GlassCard Styles */
+:root:not(.dark) .glass-card {
+  background-color: var(--card-bg, #ffffff);
+  border-color: color-mix(in srgb, var(--color-on-surface) 8%, transparent);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+:root:not(.dark) .glass-card:hover {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Pastel colors for grid items in light mode */
+:root:not(.dark) .grid > .glass-card:nth-child(6n + 1) { --card-bg: #fce4ec; } /* Pink */
+:root:not(.dark) .grid > .glass-card:nth-child(6n + 2) { --card-bg: #e3f2fd; } /* Blue */
+:root:not(.dark) .grid > .glass-card:nth-child(6n + 3) { --card-bg: #e8f5e9; } /* Green */
+:root:not(.dark) .grid > .glass-card:nth-child(6n + 4) { --card-bg: #fff8e1; } /* Amber */
+:root:not(.dark) .grid > .glass-card:nth-child(6n + 5) { --card-bg: #f3e5f5; } /* Purple */
+:root:not(.dark) .grid > .glass-card:nth-child(6n + 6) { --card-bg: #fff3e0; } /* Orange */
+
+/* Pastel utility classes */
+:root:not(.dark) .glass-card.pastel-pink { --card-bg: #fce4ec; }
+:root:not(.dark) .glass-card.pastel-blue { --card-bg: #e3f2fd; }
+:root:not(.dark) .glass-card.pastel-green { --card-bg: #e8f5e9; }
+:root:not(.dark) .glass-card.pastel-amber { --card-bg: #fff8e1; }
+:root:not(.dark) .glass-card.pastel-purple { --card-bg: #f3e5f5; }
+:root:not(.dark) .glass-card.pastel-orange { --card-bg: #fff3e0; }
+
+/* Dark Mode GlassCard Styles */
+.dark .glass-card {
+  background-color: color-mix(in srgb, var(--color-on-surface) 5%, transparent);
+  border-color: color-mix(in srgb, var(--color-on-surface) 10%, transparent);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }

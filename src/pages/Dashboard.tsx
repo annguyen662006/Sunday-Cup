@@ -4,6 +4,7 @@ import { useStandings } from '../hooks/useStandings';
 import { vi } from '../lang/vi';
 import { Trophy, Shield, Maximize2, X } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { GlassCard } from '../components/GlassCard';
 
 export const Dashboard = () => {
   const { matches, teams, players } = useStore();
@@ -138,7 +139,7 @@ export const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         {/* Main Standings Table */}
         <div className="lg:col-span-8 space-y-6 min-w-0">
-          <div className="bg-surface-container-low/40 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-8 border border-on-surface/5 shadow-2xl">
+          <GlassCard className="pastel-blue p-4 md:p-8">
             <div className="flex items-center justify-between mb-6 md:mb-8">
               <div className="flex items-center gap-2 md:gap-3">
                 <Trophy className="w-5 h-5 md:w-6 md:h-6 text-primary" />
@@ -156,13 +157,13 @@ export const Dashboard = () => {
             <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
               {renderTable()}
             </div>
-          </div>
+          </GlassCard>
         </div>
 
         {/* Mini Sidebar Stats */}
         <div className="lg:col-span-4 space-y-6 md:space-y-8 min-w-0">
           {/* Top Scorers */}
-          <div className="bg-surface-container-low/40 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-6 border border-on-surface/5 shadow-xl relative overflow-hidden">
+          <GlassCard className="pastel-pink p-4 md:p-6 relative overflow-hidden">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <h3 className="text-base md:text-lg font-bold font-headline flex items-center gap-2">
                 <Trophy className="w-4 h-4 md:w-5 md:h-5 text-primary" />
@@ -192,7 +193,7 @@ export const Dashboard = () => {
                 ))
               )}
             </div>
-          </div>
+          </GlassCard>
         </div>
       </div>
 

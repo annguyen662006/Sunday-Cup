@@ -7,7 +7,7 @@ export const GlassCard = ({ children, className, ...props }: GlassCardProps) => 
   return (
     <div
       className={cn(
-        'bg-on-surface/5 backdrop-blur-md border border-on-surface/10 shadow-xl rounded-2xl',
+        'glass-card backdrop-blur-md rounded-2xl',
         className
       )}
       {...props}

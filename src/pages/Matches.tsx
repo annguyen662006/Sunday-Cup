@@ -183,37 +183,16 @@ export const Matches = () => {
             </div>
           </div>
 
-          {/* Round Selection */}
-          <div className="relative w-full sm:w-auto">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold ml-1">
-                Lượt thi đấu
-              </label>
-              {selectedStageId && (
-                <button
-                  onClick={() => setIsManageRoundsOpen(true)}
-                  className="text-[10px] uppercase tracking-widest text-primary font-bold hover:underline"
-                >
-                  Quản lý
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-2 bg-on-surface/5 backdrop-blur-md rounded-xl p-1 border border-on-surface/5 shadow-xl w-full sm:w-auto">
-              <select
-                value={selectedRoundId}
-                onChange={(e) => setSelectedRoundId(e.target.value)}
-                disabled={!selectedStageId || stageRounds.length === 0}
-                className="appearance-none bg-transparent text-on-surface text-sm font-bold px-4 py-3 md:py-2 outline-none cursor-pointer flex-1 sm:flex-none disabled:opacity-50"
-              >
-                {stageRounds.length === 0 && <option value="" disabled>Chưa có lượt đấu</option>}
-                {stageRounds.map((r) => (
-                  <option key={r.id} value={r.id} className="bg-surface text-on-surface">
-                    {r.name} {r.date ? `(${formatDate(r.date)})` : ''}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-on-surface/50 mr-2 pointer-events-none absolute right-4 sm:static" />
-            </div>
+          {/* Round Selection - Hidden as requested, defaults to first round */}
+          <div className="hidden">
+            <select
+              value={selectedRoundId}
+              onChange={(e) => setSelectedRoundId(e.target.value)}
+            >
+              {stageRounds.map((r) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
           </div>
 
           <button
@@ -248,12 +227,12 @@ export const Matches = () => {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 mt-4 md:mt-0">
+              <div className="flex flex-col md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_150px] items-center gap-4 md:gap-8 mt-4 md:mt-0 w-full">
                 {/* Mobile: Stacked layout, Desktop: Row layout */}
-                <div className="flex items-center justify-between w-full md:w-auto">
+                <div className="flex items-center justify-between w-full md:contents">
                   {/* Home Team */}
-                  <div className="flex flex-col md:flex-row items-center justify-end flex-1 gap-2 md:gap-6">
-                    <span className="font-headline font-bold text-xs md:text-lg text-on-surface tracking-tight text-center md:text-right order-2 md:order-1">
+                  <div className="flex flex-col md:flex-row items-center justify-end flex-1 gap-2 md:gap-6 w-[40%] md:w-auto">
+                    <span className="font-headline font-bold text-xs md:text-lg text-on-surface tracking-tight text-center md:text-right order-2 md:order-1 line-clamp-2 w-full">
                       {homeTeam?.name}
                     </span>
                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-900/40 border border-blue-400/20 shadow-lg shrink-0 order-1 md:order-2 overflow-hidden">
@@ -262,7 +241,7 @@ export const Matches = () => {
                   </div>
 
                   {/* Score Center - Mobile Only */}
-                  <div className="flex md:hidden flex-col items-center gap-1 px-3 py-2 bg-surface-container-highest/20 rounded-2xl border border-on-surface/5 mx-2">
+                  <div className="flex md:hidden flex-col items-center gap-1 px-3 py-2 bg-surface-container-highest/20 rounded-2xl border border-on-surface/5 mx-2 shrink-0">
                     <div className="flex items-center justify-between w-full px-2">
                       <button 
                         onClick={() => setScoringTeam({ matchId: match.id, teamId: match.homeId })}
@@ -306,59 +285,59 @@ export const Matches = () => {
                     </div>
                   </div>
 
+                  {/* Score Center - Desktop Only */}
+                  <div className="hidden md:flex flex-col items-center gap-2 px-6 py-2 bg-surface-container-highest/20 rounded-2xl border border-on-surface/5">
+                    <div className="flex items-center justify-between w-full px-2">
+                      <button 
+                        onClick={() => setScoringTeam({ matchId: match.id, teamId: match.homeId })}
+                        disabled={match.status === 'played'}
+                        className="p-1 text-primary hover:bg-primary/20 rounded-full transition-colors disabled:opacity-50"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={() => setScoringTeam({ matchId: match.id, teamId: match.awayId })}
+                        disabled={match.status === 'played'}
+                        className="p-1 text-primary hover:bg-primary/20 rounded-full transition-colors disabled:opacity-50"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
+                        {match.homeScore ?? 0}
+                      </div>
+                      <span className="font-headline font-bold text-2xl text-on-surface/20">:</span>
+                      <div className="w-14 h-14 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
+                        {match.awayScore ?? 0}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between w-full px-2">
+                      <button 
+                        onClick={() => removeLastMatchEvent(match.id, match.homeId)}
+                        disabled={match.status === 'played' || !match.homeScore}
+                        className="p-1 text-error hover:bg-error/20 rounded-full transition-colors disabled:opacity-50"
+                      >
+                        <Minus className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={() => removeLastMatchEvent(match.id, match.awayId)}
+                        disabled={match.status === 'played' || !match.awayScore}
+                        className="p-1 text-error hover:bg-error/20 rounded-full transition-colors disabled:opacity-50"
+                      >
+                        <Minus className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Away Team */}
-                  <div className="flex flex-col md:flex-row items-center flex-1 gap-2 md:gap-6">
+                  <div className="flex flex-col md:flex-row items-center justify-start flex-1 gap-2 md:gap-6 w-[40%] md:w-auto">
                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-red-500/20 to-red-900/40 border border-red-400/20 shadow-lg shrink-0 overflow-hidden">
                       <img src={awayTeam?.logo || undefined} alt={awayTeam?.name} className="w-full h-full object-cover filter drop-shadow-md" />
                     </div>
-                    <span className="font-headline font-bold text-xs md:text-lg text-on-surface tracking-tight text-center md:text-left">
+                    <span className="font-headline font-bold text-xs md:text-lg text-on-surface tracking-tight text-center md:text-left line-clamp-2 w-full">
                       {awayTeam?.name}
                     </span>
-                  </div>
-                </div>
-
-                {/* Score Center - Desktop Only */}
-                <div className="hidden md:flex flex-col items-center gap-2 px-6 py-2 bg-surface-container-highest/20 rounded-2xl border border-on-surface/5">
-                  <div className="flex items-center justify-between w-full px-2">
-                    <button 
-                      onClick={() => setScoringTeam({ matchId: match.id, teamId: match.homeId })}
-                      disabled={match.status === 'played'}
-                      className="p-1 text-primary hover:bg-primary/20 rounded-full transition-colors disabled:opacity-50"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => setScoringTeam({ matchId: match.id, teamId: match.awayId })}
-                      disabled={match.status === 'played'}
-                      className="p-1 text-primary hover:bg-primary/20 rounded-full transition-colors disabled:opacity-50"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
-                      {match.homeScore ?? 0}
-                    </div>
-                    <span className="font-headline font-bold text-2xl text-on-surface/20">:</span>
-                    <div className="w-14 h-14 bg-surface-container-lowest/40 border border-on-surface/10 rounded-xl flex items-center justify-center font-headline font-black text-2xl text-primary neon-glow-primary">
-                      {match.awayScore ?? 0}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between w-full px-2">
-                    <button 
-                      onClick={() => removeLastMatchEvent(match.id, match.homeId)}
-                      disabled={match.status === 'played' || !match.homeScore}
-                      className="p-1 text-error hover:bg-error/20 rounded-full transition-colors disabled:opacity-50"
-                    >
-                      <Minus className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => removeLastMatchEvent(match.id, match.awayId)}
-                      disabled={match.status === 'played' || !match.awayScore}
-                      className="p-1 text-error hover:bg-error/20 rounded-full transition-colors disabled:opacity-50"
-                    >
-                      <Minus className="w-5 h-5" />
-                    </button>
                   </div>
                 </div>
 
@@ -381,11 +360,46 @@ export const Matches = () => {
                     </button>
                   )}
                 </div>
+
+                {/* Match Events - Desktop */}
+                {match.events && match.events.length > 0 && (
+                  <>
+                    <div className="hidden md:block col-span-full h-[1px] bg-on-surface/5 w-full mt-2"></div>
+                    
+                    {/* Home Scorers */}
+                    <div className="hidden md:flex flex-col items-end pt-2 w-full space-y-1 pr-2">
+                      {match.events.filter(e => e.teamId === match.homeId).map(e => (
+                        <div key={e.id} className="text-sm text-on-surface/80 flex items-center justify-end gap-2">
+                          <span>{getPlayerName(e.playerId)}</span>
+                          <span className="text-xs text-on-surface/40">{e.timestamp}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Center Spacer */}
+                    <div className="hidden md:flex justify-center pt-2 w-full">
+                      <div className="w-[1px] bg-on-surface/10 min-h-[20px]"></div>
+                    </div>
+
+                    {/* Away Scorers */}
+                    <div className="hidden md:flex flex-col items-start pt-2 w-full space-y-1 pl-2">
+                      {match.events.filter(e => e.teamId === match.awayId).map(e => (
+                        <div key={e.id} className="text-sm text-on-surface/80 flex items-center gap-2">
+                          <span className="text-xs text-on-surface/40">{e.timestamp}</span>
+                          <span>{getPlayerName(e.playerId)}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Action Column Spacer */}
+                    <div className="hidden md:block"></div>
+                  </>
+                )}
               </div>
 
-              {/* Match Events */}
+              {/* Match Events - Mobile */}
               {match.events && match.events.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-on-surface/5 grid grid-cols-2 gap-4">
+                <div className="md:hidden mt-4 pt-4 border-t border-on-surface/5 grid grid-cols-2 gap-4">
                   <div className="space-y-2 text-right pr-4 border-r border-on-surface/5">
                     {match.events.filter(e => e.teamId === match.homeId).map(e => (
                       <div key={e.id} className="text-sm text-on-surface/80 flex items-center justify-end gap-2">
