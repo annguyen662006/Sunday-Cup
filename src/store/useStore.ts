@@ -421,7 +421,7 @@ export const useStore = create<StoreState>()((set, get) => ({
         m.id === matchId ? { ...m, events, homeScore, awayScore } : m
       ),
       players: state.players.map((p) =>
-        p.id === event.playerId && event.type === 'goal'
+        event.playerId !== null && p.id === event.playerId && event.type === 'goal'
           ? { ...p, goals: (p.goals || 0) + 1 }
           : p
       ),
@@ -433,7 +433,7 @@ export const useStore = create<StoreState>()((set, get) => ({
       .eq('id', matchId);
     if (matchError) console.error('Error adding match event:', matchError);
 
-    if (event.type === 'goal') {
+    if (event.type === 'goal' && event.playerId !== null) {
       const player = state.players.find(p => p.id === event.playerId);
       if (player) {
         const { error: playerError } = await supabase
@@ -463,7 +463,7 @@ export const useStore = create<StoreState>()((set, get) => ({
         m.id === matchId ? { ...m, events, homeScore, awayScore } : m
       ),
       players: state.players.map((p) =>
-        p.id === lastEvent.playerId && lastEvent.type === 'goal'
+        lastEvent.playerId !== null && p.id === lastEvent.playerId && lastEvent.type === 'goal'
           ? { ...p, goals: Math.max(0, (p.goals || 0) - 1) }
           : p
       ),
@@ -475,7 +475,7 @@ export const useStore = create<StoreState>()((set, get) => ({
       .eq('id', matchId);
     if (matchError) console.error('Error removing match event:', matchError);
 
-    if (lastEvent.type === 'goal') {
+    if (lastEvent.type === 'goal' && lastEvent.playerId !== null) {
       const player = state.players.find(p => p.id === lastEvent.playerId);
       if (player) {
         const { error: playerError } = await supabase
@@ -495,7 +495,7 @@ export const useStore = create<StoreState>()((set, get) => ({
     const playerGoalReductions: Record<number, number> = {};
     if (matchToDelete.events) {
       matchToDelete.events.forEach(event => {
-        if (event.type === 'goal') {
+        if (event.type === 'goal' && event.playerId !== null) {
           playerGoalReductions[event.playerId] = (playerGoalReductions[event.playerId] || 0) + 1;
         }
       });

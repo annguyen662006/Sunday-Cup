@@ -201,6 +201,8 @@ export function Admin() {
                       <th className="py-3 px-4 font-medium text-on-surface-variant">Tên đăng nhập</th>
                       <th className="py-3 px-4 font-medium text-on-surface-variant">Vai trò</th>
                       <th className="py-3 px-4 font-medium text-on-surface-variant">Trạng thái</th>
+                      <th className="py-3 px-4 font-medium text-on-surface-variant">Last Login</th>
+                      <th className="py-3 px-4 font-medium text-on-surface-variant">Total time</th>
                       <th className="py-3 px-4 font-medium text-on-surface-variant">Ngày tạo</th>
                     </tr>
                   </thead>
@@ -226,6 +228,19 @@ export function Admin() {
                           ) : (
                             <span className="text-primary text-sm">Đã kích hoạt</span>
                           )}
+                        </td>
+                        <td className="py-3 px-4 text-on-surface-variant text-sm">
+                          {user.last_login ? new Date(user.last_login).toLocaleString('vi-VN') : 'Chưa đăng nhập'}
+                        </td>
+                        <td className="py-3 px-4 text-on-surface-variant text-sm">
+                          {(() => {
+                            const seconds = user.total_time || 0;
+                            if (seconds === 0) return '0 phút';
+                            const hours = Math.floor(seconds / 3600);
+                            const minutes = Math.floor((seconds % 3600) / 60);
+                            if (hours > 0) return `${hours}h ${minutes}m`;
+                            return `${minutes} phút`;
+                          })()}
                         </td>
                         <td className="py-3 px-4 text-on-surface-variant text-sm">
                           {new Date((user as any).created_at).toLocaleDateString('vi-VN')}

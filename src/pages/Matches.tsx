@@ -63,7 +63,9 @@ export const Matches = () => {
 
   const filteredMatches = useMemo(() => {
     if (!selectedRoundId) return [];
-    return matches.filter((m) => m.roundId === selectedRoundId);
+    return matches
+      .filter((m) => m.roundId === selectedRoundId)
+      .sort((a, b) => b.id - a.id);
   }, [matches, selectedRoundId]);
 
   const selectedTournament = tournaments.find(t => t.id === selectedTournamentId);
@@ -71,7 +73,10 @@ export const Matches = () => {
   const selectedRound = rounds.find(r => r.id === selectedRoundId);
 
   const getTeam = (teamId: string) => teams.find((t) => t.id === teamId);
-  const getPlayerName = (playerId: number) => players.find(p => p.id === playerId)?.name;
+  const getPlayerName = (playerId: number | null) => {
+    if (playerId === null) return 'Bàn thắng (Không ghi nhận)';
+    return players.find(p => p.id === playerId)?.name;
+  };
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return '';
@@ -82,7 +87,7 @@ export const Matches = () => {
     return dateString;
   };
 
-  const handleGoalScored = (playerId: number) => {
+  const handleGoalScored = (playerId: number | null) => {
     if (!scoringTeam) return;
     const now = new Date();
     const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;

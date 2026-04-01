@@ -14,6 +14,7 @@ import { Login } from './pages/Login';
 import { Admin } from './pages/Admin';
 import { useStore } from './store/useStore';
 import { ChangePasswordModal } from './components/ChangePasswordModal';
+import { supabase } from './lib/supabase';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const currentUser = useStore(state => state.currentUser);
@@ -47,6 +48,23 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const interval = setInterval(async () => {
+      try {
+        await supabase.rpc('increment_user_time', {
+          p_user_id: currentUser.id,
+          p_seconds: 30
+        });
+      } catch (err) {
+        console.error('Error updating user time:', err);
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [currentUser]);
 
   if (isLoading) {
     return (

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { X } from 'lucide-react';
+import { X, UserMinus } from 'lucide-react';
 
 interface SelectPlayerModalProps {
   teamId: string;
   onClose: () => void;
-  onSelect: (playerId: number) => void;
+  onSelect: (playerId: number | null) => void;
 }
 
 export const SelectPlayerModal = ({ teamId, onClose, onSelect }: SelectPlayerModalProps) => {
@@ -23,6 +23,21 @@ export const SelectPlayerModal = ({ teamId, onClose, onSelect }: SelectPlayerMod
           </button>
         </div>
         <div className="p-4 max-h-[60vh] overflow-y-auto space-y-2">
+          <button
+            onClick={() => {
+              onSelect(null);
+              onClose();
+            }}
+            className="w-full flex items-center gap-4 p-3 rounded-xl bg-surface-container-highest/50 hover:bg-surface-container-highest transition-colors text-left border border-on-surface/5"
+          >
+            <div className="w-10 h-10 rounded-full bg-on-surface/10 flex items-center justify-center text-on-surface-variant">
+              <UserMinus className="w-5 h-5" />
+            </div>
+            <span className="font-bold text-on-surface italic">Bỏ trống (Không ghi nhận cầu thủ)</span>
+          </button>
+          
+          <div className="h-px bg-on-surface/10 my-2"></div>
+
           {teamPlayers.length === 0 ? (
             <p className="text-center text-on-surface/50 py-4">Không có cầu thủ nào trong đội này.</p>
           ) : (

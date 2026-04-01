@@ -3,6 +3,8 @@ export interface User {
   username: string;
   role: 'admin' | 'user';
   is_first_login: boolean;
+  last_login?: string;
+  total_time?: number;
 }
 
 export interface Team {
@@ -16,7 +18,7 @@ export interface MatchEvent {
   id: string;
   type: 'goal';
   teamId: string;
-  playerId: number;
+  playerId: number | null;
   timestamp: string;
 }
 
