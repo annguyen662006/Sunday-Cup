@@ -55,7 +55,7 @@ export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
     <div className="space-y-6 w-full">
       <div className="text-center mb-8">
         <h2 className="text-xl md:text-2xl font-headline font-bold uppercase tracking-wider text-on-surface">
-          Tổng kết SG League
+          Joykick Premier League 2026
         </h2>
       </div>
 
@@ -141,7 +141,7 @@ export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="font-headline font-black text-xl md:text-2xl text-on-surface">SG</span>
+            <span className="font-headline font-black text-xl md:text-2xl text-on-surface">JOYKICK</span>
             <span className="font-headline font-black text-xl md:text-2xl text-on-surface">LEAGUE</span>
           </div>
         </div>
