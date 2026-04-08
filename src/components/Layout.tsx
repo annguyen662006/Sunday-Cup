@@ -24,7 +24,7 @@ export const Layout = () => {
     <div className="flex min-h-screen bg-surface font-body text-on-surface selection:bg-primary selection:text-on-primary">
       <Navigation />
       
-      <div className="flex-1 md:ml-64 flex flex-col min-h-screen pb-20 md:pb-0 min-w-0">
+      <div className="flex-1 md:ml-64 flex flex-col min-h-screen pb-24 md:pb-0 min-w-0">
         <header className="sticky top-0 w-full h-14 md:h-16 bg-surface-container-lowest/30 backdrop-blur-md border-b border-on-surface/5 flex justify-between items-center px-4 md:px-8 z-40">
           <div className="flex items-center gap-2 md:gap-4 truncate min-w-0">
             <h2 className="text-lg md:text-2xl font-black italic tracking-tighter text-on-surface font-headline uppercase truncate">

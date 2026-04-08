@@ -95,46 +95,58 @@ export const Navigation = () => {
               Đăng nhập
             </button>
           )}
+          <div className="mt-6 text-center">
+            <p className="text-[10px] text-on-surface-variant/40 uppercase tracking-widest font-bold">
+              Phát triển bởi Thành Vinh
+            </p>
+          </div>
         </div>
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-highest/90 backdrop-blur-xl border-t border-on-surface/10 z-50 flex justify-around items-center p-2 pb-safe">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              cn(
-                'flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1',
-                isActive
-                  ? 'text-primary'
-                  : 'text-on-surface/50 hover:text-on-surface/90'
-              )
-            }
-          >
-            <item.icon className="w-5 h-5" />
-            <span className="text-[10px] font-bold font-headline truncate w-full text-center">{item.label}</span>
-          </NavLink>
-        ))}
-        {currentUser ? (
-          <button
-            onClick={handleLogout}
-            className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1 text-on-surface/50 hover:text-error"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="text-[10px] font-bold font-headline truncate w-full text-center">Đăng xuất</span>
-          </button>
-        ) : (
-          <button
-            onClick={() => navigate('/login')}
-            className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1 text-on-surface/50 hover:text-primary"
-          >
-            <LogIn className="w-5 h-5" />
-            <span className="text-[10px] font-bold font-headline truncate w-full text-center">Đăng nhập</span>
-          </button>
-        )}
-      </nav>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-highest/90 backdrop-blur-xl border-t border-on-surface/10 z-50 pb-safe">
+        <nav className="flex justify-around items-center p-2">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                cn(
+                  'flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1',
+                  isActive
+                    ? 'text-primary'
+                    : 'text-on-surface/50 hover:text-on-surface/90'
+                )
+              }
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-[10px] font-bold font-headline truncate w-full text-center">{item.label}</span>
+            </NavLink>
+          ))}
+          {currentUser ? (
+            <button
+              onClick={handleLogout}
+              className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1 text-on-surface/50 hover:text-error"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="text-[10px] font-bold font-headline truncate w-full text-center">Đăng xuất</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all flex-1 text-on-surface/50 hover:text-primary"
+            >
+              <LogIn className="w-5 h-5" />
+              <span className="text-[10px] font-bold font-headline truncate w-full text-center">Đăng nhập</span>
+            </button>
+          )}
+        </nav>
+        <div className="text-center pb-1.5">
+          <p className="text-[8px] text-on-surface-variant/40 uppercase tracking-widest font-bold">
+            Phát triển bởi Thành Vinh
+          </p>
+        </div>
+      </div>
     </>
   );
 };
