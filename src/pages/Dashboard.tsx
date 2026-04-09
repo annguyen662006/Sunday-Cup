@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useStandings } from '../hooks/useStandings';
 import { vi } from '../lang/vi';
-import { Trophy, Shield, Maximize2, X } from 'lucide-react';
+import { Trophy, Shield, Maximize2, X, Sparkles } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { GlassCard } from '../components/GlassCard';
 
@@ -47,30 +47,41 @@ export const Dashboard = () => {
                 'transition-all',
                 isModal ? 'rounded-lg' : 'rounded-xl md:rounded-2xl',
                 index === 0
-                  ? 'group gold-glow overflow-hidden hover:scale-[1.01]'
+                  ? 'group gold-glow overflow-hidden hover:scale-[1.01] bg-gradient-to-r from-[#FFD700]/20 to-[#FFD700]/5 border border-[#FFD700]/30 relative'
+                  : index === 1
+                  ? 'group overflow-hidden hover:scale-[1.01] bg-gradient-to-r from-[#C0C0C0]/20 to-[#C0C0C0]/5 border border-[#C0C0C0]/30 relative'
+                  : index === 2
+                  ? 'group overflow-hidden hover:scale-[1.01] bg-gradient-to-r from-[#CD7F32]/20 to-[#CD7F32]/5 border border-[#CD7F32]/30 relative'
                   : 'bg-surface-container-highest/20 hover:bg-on-surface/5'
               )}
             >
-              <td className={cn(isModal ? "px-1 py-1.5 rounded-l-lg" : "px-3 md:px-6 py-3 md:py-4 rounded-l-xl md:rounded-l-2xl")}>
+              <td className={cn(isModal ? "px-1 py-1.5 rounded-l-lg" : "px-3 md:px-6 py-3 md:py-4 rounded-l-xl md:rounded-l-2xl", "relative z-10")}>
                 <div
                   className={cn(
                     'flex items-center justify-center font-bold',
                     isModal ? 'w-5 h-5 text-[10px] rounded-full' : 'w-6 h-6 md:w-8 md:h-8 text-xs md:text-sm rounded-full',
                     index === 0
-                      ? 'bg-primary text-on-primary font-black shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_40%,transparent)]'
+                      ? 'bg-[#FFD700] text-black font-black shadow-[0_0_15px_rgba(255,215,0,0.6)]'
+                      : index === 1
+                      ? 'bg-[#C0C0C0] text-black font-black shadow-[0_0_15px_rgba(192,192,192,0.6)]'
+                      : index === 2
+                      ? 'bg-[#CD7F32] text-white font-black shadow-[0_0_15px_rgba(205,127,50,0.6)]'
                       : 'bg-on-surface/5 text-on-surface-variant border border-on-surface/10'
                   )}
                 >
                   {index + 1}
                 </div>
               </td>
-              <td className={cn(isModal ? "px-1 py-1.5" : "px-2 md:px-4 py-3 md:py-4")}>
+              <td className={cn(isModal ? "px-1 py-1.5" : "px-2 md:px-4 py-3 md:py-4", "relative z-10")}>
                 <div className={cn("flex items-center", isModal ? "gap-1.5" : "gap-3 md:gap-4")}>
                   <div
                     className={cn(
                       'rounded-full bg-on-surface/5 flex items-center justify-center border border-on-surface/10 transition-colors shrink-0 overflow-hidden',
                       isModal ? 'w-6 h-6' : 'w-8 h-8 md:w-10 md:h-10',
-                      index === 0 && 'group-hover:border-primary/50'
+                      index === 0 ? 'border-[#FFD700]/50 shadow-[0_0_10px_rgba(255,215,0,0.3)]' :
+                      index === 1 ? 'border-[#C0C0C0]/50 shadow-[0_0_10px_rgba(192,192,192,0.3)]' :
+                      index === 2 ? 'border-[#CD7F32]/50 shadow-[0_0_10px_rgba(205,127,50,0.3)]' :
+                      'group-hover:border-primary/50'
                     )}
                   >
                     {getTeamLogo(team.teamId) ? (
@@ -79,25 +90,30 @@ export const Dashboard = () => {
                       <Shield className={cn("text-on-surface/50", isModal ? "w-3 h-3" : "w-5 h-5 md:w-6 md:h-6")} />
                     )}
                   </div>
-                  <div className="min-w-0">
-                    <p className={cn("font-bold text-on-surface font-headline truncate", isModal ? "text-xs max-w-[120px]" : "text-sm md:text-base")}>{getTeamName(team.teamId)}</p>
+                  <div className="min-w-0 relative">
+                    <div className="flex items-center gap-1">
+                      <p className={cn("font-bold text-on-surface font-headline truncate", isModal ? "text-xs max-w-[120px]" : "text-sm md:text-base")}>{getTeamName(team.teamId)}</p>
+                      {index === 0 && <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-[#FFD700] animate-sparkle" />}
+                      {index === 1 && <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-[#C0C0C0] animate-sparkle-delayed" />}
+                      {index === 2 && <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-[#CD7F32] animate-sparkle" />}
+                    </div>
                     <p className={cn("text-on-surface-variant uppercase tracking-widest truncate", isModal ? "text-[7px]" : "text-[8px] md:text-[10px]")}>
                       {index === 0 ? vi.dashboard.champion : index === 1 ? vi.dashboard.risingStar : index === 2 ? vi.dashboard.localRival : ''}
                     </p>
                   </div>
                 </div>
               </td>
-              <td className={cn("text-center font-bold text-on-surface", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base")}>{team.played}</td>
-              <td className={cn("text-center font-medium text-success", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base")}>{team.won}</td>
-              <td className={cn("text-center font-medium text-warning", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base")}>{team.drawn}</td>
-              <td className={cn("text-center font-medium text-error", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base")}>{team.lost}</td>
-              <td className={cn("text-center font-medium text-on-surface/70", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base")}>{team.goalsFor}</td>
-              <td className={cn("text-center font-medium text-on-surface/70", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base")}>{team.goalsAgainst}</td>
+              <td className={cn("text-center font-bold", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base", index < 3 ? "text-on-surface" : "text-on-surface")}>{team.played}</td>
+              <td className={cn("text-center font-medium", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base", index < 3 ? "text-success" : "text-success")}>{team.won}</td>
+              <td className={cn("text-center font-medium", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base", index < 3 ? "text-warning" : "text-warning")}>{team.drawn}</td>
+              <td className={cn("text-center font-medium", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base", index < 3 ? "text-error" : "text-error")}>{team.lost}</td>
+              <td className={cn("text-center font-medium", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base", index < 3 ? "text-on-surface/90" : "text-on-surface/70")}>{team.goalsFor}</td>
+              <td className={cn("text-center font-medium", isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base", index < 3 ? "text-on-surface/90" : "text-on-surface/70")}>{team.goalsAgainst}</td>
               <td
                 className={cn(
                   'text-center font-medium',
                   isModal ? "px-1 py-1.5 text-xs" : "px-2 md:px-4 py-3 md:py-4 text-sm md:text-base",
-                  team.goalDifference > 0 ? (index === 0 ? 'text-primary' : 'text-on-surface/70') : 'text-error'
+                  team.goalDifference > 0 ? (index === 0 ? 'text-[#FFD700]' : index === 1 ? 'text-[#C0C0C0]' : index === 2 ? 'text-[#CD7F32]' : 'text-primary') : 'text-error'
                 )}
               >
                 {team.goalDifference > 0 ? '+' : ''}{team.goalDifference}
@@ -107,7 +123,10 @@ export const Dashboard = () => {
                   className={cn(
                     'font-black font-headline',
                     isModal ? "text-sm" : "text-lg md:text-xl",
-                    index === 0 ? 'text-primary' : 'text-on-surface'
+                    index === 0 ? 'text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]' : 
+                    index === 1 ? 'text-[#C0C0C0] drop-shadow-[0_0_8px_rgba(192,192,192,0.5)]' : 
+                    index === 2 ? 'text-[#CD7F32] drop-shadow-[0_0_8px_rgba(205,127,50,0.5)]' : 
+                    'text-on-surface'
                   )}
                 >
                   {team.points}

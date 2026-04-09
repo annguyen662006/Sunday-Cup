@@ -17,13 +17,22 @@ import {
   Cell
 } from 'recharts';
 
-const COLORS = ['#3B82F6', '#10B981', '#F43F5E', '#F59E0B', '#8B5CF6', '#06B6D4'];
+const DEFAULT_COLORS = ['#3B82F6', '#10B981', '#F43F5E', '#F59E0B', '#8B5CF6', '#06B6D4'];
+
+const getTeamColor = (teamName: string, index: number) => {
+  const name = teamName.toLowerCase();
+  if (name.includes('sunday united')) return '#EF4444'; // Red
+  if (name.includes('diamond blue')) return '#3B82F6'; // Blue
+  if (name.includes('fffc')) return '#10B981'; // Green
+  return DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+};
 
 interface StatisticsChartsProps {
   onTeamClick: (teamId: string) => void;
+  onViewAllTeams: () => void;
 }
 
-export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
+export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChartsProps) => {
   const { matches, teams, rounds, stages, isDarkMode } = useStore();
   const { barChartData, lineChartData, pieChartData } = useChartData(matches, teams, rounds, stages);
 
@@ -75,7 +84,7 @@ export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
                 />
                 <Legend iconType="square" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: axisColor }} />
                 {teams.map((team, index) => (
-                  <Bar key={team.id} dataKey={team.name} fill={COLORS[index % COLORS.length]} radius={[4, 4, 0, 0]} />
+                  <Bar key={team.id} dataKey={team.name} fill={getTeamColor(team.name, index)} radius={[4, 4, 0, 0]} />
                 ))}
               </BarChart>
             </ResponsiveContainer>
@@ -97,7 +106,7 @@ export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
                 />
                 <Legend iconType="plainline" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: axisColor }} />
                 {teams.map((team, index) => (
-                  <Line key={team.id} type="monotone" dataKey={team.name} stroke={COLORS[index % COLORS.length]} strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
+                  <Line key={team.id} type="monotone" dataKey={team.name} stroke={getTeamColor(team.name, index)} strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
                 ))}
               </LineChart>
             </ResponsiveContainer>
@@ -130,7 +139,7 @@ export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
                 className="cursor-pointer outline-none"
               >
                 {pieChartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} className="hover:opacity-80 transition-opacity outline-none" />
+                  <Cell key={`cell-${index}`} fill={getTeamColor(entry.name, index)} className="hover:opacity-80 transition-opacity outline-none" />
                 ))}
               </Pie>
               <Tooltip 
@@ -145,14 +154,21 @@ export const StatisticsCharts = ({ onTeamClick }: StatisticsChartsProps) => {
             <span className="font-headline font-black text-xl md:text-2xl text-on-surface">LEAGUE</span>
           </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-4 mt-4">
+        <div className="flex flex-wrap justify-center gap-4 mt-4 mb-8">
           {pieChartData.map((entry, index) => (
             <div key={entry.name} className="flex items-center gap-2 text-xs md:text-sm">
-              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: getTeamColor(entry.name, index) }}></div>
               <span className="text-on-surface-variant">{entry.name}</span>
             </div>
           ))}
         </div>
+        
+        <button
+          onClick={onViewAllTeams}
+          className="mt-4 px-6 py-3 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center gap-2"
+        >
+          Xem chi tiết các đội bóng
+        </button>
       </GlassCard>
     </div>
   );

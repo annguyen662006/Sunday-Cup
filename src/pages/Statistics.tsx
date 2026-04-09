@@ -27,7 +27,10 @@ export const Statistics = () => {
   return (
     <div className="space-y-6 md:space-y-8 animate-in fade-in duration-700 w-full">
       {!showTeamCards ? (
-        <StatisticsCharts onTeamClick={() => setShowTeamCards(true)} />
+        <StatisticsCharts 
+          onTeamClick={() => setShowTeamCards(true)} 
+          onViewAllTeams={() => setShowTeamCards(true)}
+        />
       ) : (
         <div className="space-y-6">
           <button 
