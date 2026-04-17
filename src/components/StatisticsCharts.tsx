@@ -6,7 +6,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
@@ -37,25 +36,36 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
   const { barChartData, lineChartData, pieChartData } = useChartData(matches, teams, rounds, stages);
 
   const axisColor = isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
-  const gridColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const tooltipBg = isDarkMode ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)';
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const tooltipText = isDarkMode ? '#fff' : '#000';
-  const labelLineColor = isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)';
 
   if (teams.length === 0 || barChartData.length === 0) {
     return null;
   }
 
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }: any) => {
+  const sortedTeams = [...teams].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedPieData = [...pieChartData].sort((a, b) => a.name.localeCompare(b.name));
+
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
     const RADIAN = Math.PI / 180;
-    const radius = outerRadius + 30;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
+    if (percent === 0) return null;
+
     return (
-      <text x={x} y={y} fill="currentColor" className="text-[10px] md:text-xs font-bold text-on-surface" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-        {`${name} ${(percent * 100).toFixed(0)}%`}
+      <text 
+        x={x} 
+        y={y} 
+        fill="#ffffff" 
+        style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.8)' }}
+        className="text-[10px] md:text-xs font-bold pointer-events-none" 
+        textAnchor="middle" 
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
       </text>
     );
   };
@@ -75,7 +85,6 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
                 <XAxis dataKey="name" stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
@@ -83,7 +92,7 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
                   itemStyle={{ color: tooltipText }}
                 />
                 <Legend iconType="square" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: axisColor }} />
-                {teams.map((team, index) => (
+                {sortedTeams.map((team, index) => (
                   <Bar key={team.id} dataKey={team.name} fill={getTeamColor(team.name, index)} radius={[4, 4, 0, 0]} />
                 ))}
               </BarChart>
@@ -97,7 +106,6 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
                 <XAxis dataKey="name" stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
@@ -105,7 +113,7 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
                   itemStyle={{ color: tooltipText }}
                 />
                 <Legend iconType="plainline" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: axisColor }} />
-                {teams.map((team, index) => (
+                {sortedTeams.map((team, index) => (
                   <Line key={team.id} type="monotone" dataKey={team.name} stroke={getTeamColor(team.name, index)} strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
                 ))}
               </LineChart>
@@ -122,7 +130,7 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={pieChartData}
+                data={sortedPieData}
                 cx="50%"
                 cy="50%"
                 innerRadius={80}
@@ -130,7 +138,7 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
                 paddingAngle={2}
                 dataKey="value"
                 label={renderCustomizedLabel}
-                labelLine={{ stroke: labelLineColor, strokeWidth: 1 }}
+                labelLine={false}
                 onClick={(data) => {
                   if (data && data.payload && data.payload.id) {
                     onTeamClick(data.payload.id);
@@ -138,7 +146,7 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
                 }}
                 className="cursor-pointer outline-none"
               >
-                {pieChartData.map((entry, index) => (
+                {sortedPieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={getTeamColor(entry.name, index)} className="hover:opacity-80 transition-opacity outline-none" />
                 ))}
               </Pie>
@@ -155,7 +163,7 @@ export const StatisticsCharts = ({ onTeamClick, onViewAllTeams }: StatisticsChar
           </div>
         </div>
         <div className="flex flex-wrap justify-center gap-4 mt-4 mb-8">
-          {pieChartData.map((entry, index) => (
+          {sortedPieData.map((entry, index) => (
             <div key={entry.name} className="flex items-center gap-2 text-xs md:text-sm">
               <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: getTeamColor(entry.name, index) }}></div>
               <span className="text-on-surface-variant">{entry.name}</span>
